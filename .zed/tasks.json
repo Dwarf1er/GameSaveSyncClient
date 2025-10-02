@@ -3,18 +3,21 @@
     "label": "CMake Regenerate",
     "command": "cmake -G \"Ninja Multi-Config\" ..",
     "cwd": "$ZED_WORKTREE_ROOT/build",
-    "env": { "CXX": "/usr/bin/clang-cpp" }
+    "env": { "CXX": "/usr/bin/clang-cpp" },
+    "hide": "on_success"
   },
   {
     "label": "CMake Debug",
     "command": "cmake --build . --config Debug",
     "cwd": "$ZED_WORKTREE_ROOT/build",
-    "env": { "CXX": "/usr/bin/clang-cpp" }
+    "env": { "CXX": "/usr/bin/clang-cpp" },
+    "hide": "on_success"
   },
   {
     "label": "CMake Release",
     "command": "cmake --build . --config Release",
     "cwd": "$ZED_WORKTREE_ROOT/build",
-    "env": { "CXX": "/usr/bin/clang-cpp" }
+    "env": { "CXX": "/usr/bin/clang-cpp" },
+    "hide": "on_success"
   }
 ]

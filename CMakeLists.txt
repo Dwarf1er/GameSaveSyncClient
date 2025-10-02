@@ -7,6 +7,11 @@ set(QT_MAJOR_VERSION 6)
 project(${TARGET_NAME} VERSION 0.0.1 DESCRIPTION "GameSaveSyncClient")
 
 set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTOUIC ON)
+
+set(CMAKE_AUTOUIC_SEARCH_PATHS
+  ${CMAKE_SOURCE_DIR}/ui
+)
 
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -33,6 +38,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
 endif()
 
 add_executable(${TARGET_NAME}
+    ui/main_window.ui
     include/window.h
     src/window.cpp
     src/main.cpp)

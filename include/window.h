@@ -4,21 +4,20 @@
 #include <QLabel>
 #include <QPushButton>
 
+#include <QMainWindow>
+
+QT_BEGIN_NAMESPACE
+namespace Ui { class MainWindow; }
+QT_END_NAMESPACE
+
 class GameSaveSyncClient : public QMainWindow
 {
     Q_OBJECT
 
-    int32_t mButtonPressedAmt;
-
-    QLabel* mpLabel;
-    QPushButton* mpPushButton;
-
-    void updateLabelText();
-
 public:
-    GameSaveSyncClient(QWidget* parent = nullptr);
-    ~GameSaveSyncClient() = default;
+    GameSaveSyncClient(QWidget *parent = nullptr);
+    ~GameSaveSyncClient();
 
-signals:
-    void sigLabelTextUpdated(std::string_view);
+private:
+    Ui::MainWindow *ui;
 };
