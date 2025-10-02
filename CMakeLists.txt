@@ -44,8 +44,10 @@ add_executable(${TARGET_NAME}
     src/main.cpp)
 
 target_compile_definitions(${TARGET_NAME} PRIVATE
-  $<$<CONFIG:Debug>:DEBUG>
+  $<$<CONFIG:Debug>:DEBUG QT_DEBUG>
   $<$<CONFIG:Release>:NDEBUG>
+  $<$<PLATFORM_ID:Windows>:PLATFORM_WINDOWS>
+  $<$<PLATFORM_ID:Linux>:PLATFORM_LINUX>
 )
 
 if(MSVC)
