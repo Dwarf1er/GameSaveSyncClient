@@ -4,7 +4,8 @@
     "build": {
       "command": "cmake --build . --config Debug",
       "args": ["-j8"],
-      "cwd": "$ZED_WORKTREE_ROOT/build"
+      "cwd": "$ZED_WORKTREE_ROOT/build",
+      "env": { "CXX": "/usr/bin/clang-cpp" }
     },
     "program": "$ZED_WORKTREE_ROOT/build/bin/Debug/GameSaveSyncClient",
     "request": "launch",

@@ -1,12 +1,12 @@
-#include "window.hpp"
+#include "window.h"
 #include <QApplication>
 
 int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
 
-    Tester test;
-    test.show();
+    GameSaveSyncClient gameSaveSyncClient;
+    gameSaveSyncClient.show();
 
     app.exec();
 }

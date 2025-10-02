@@ -1,9 +1,9 @@
-#include "window.hpp"
+#include "window.h"
 
 #include <iostream>
 #include <QVBoxLayout>
 
-Tester::Tester(QWidget* parent)
+GameSaveSyncClient::GameSaveSyncClient(QWidget* parent)
 :QMainWindow(parent), mButtonPressedAmt(0)
 {
     //Since this is a QMainWindow we cannot set a layout,
@@ -34,12 +34,12 @@ Tester::Tester(QWidget* parent)
     });
 
     //Syntax to connect a custom class signal with a lambda.
-    QObject::connect(this, &Tester::sigLabelTextUpdated, this, [](std::string_view val){
+    QObject::connect(this, &GameSaveSyncClient::sigLabelTextUpdated, this, [](std::string_view val){
         std::cout << val << std::endl;
     });
 }
 
-void Tester::updateLabelText()
+void GameSaveSyncClient::updateLabelText()
 {
     this->mpLabel->setText("Button was clicked: " + QString::number(this->mButtonPressedAmt) + " times.");
 

@@ -8,7 +8,7 @@ project(${TARGET_NAME} VERSION 0.0.1 DESCRIPTION "GameSaveSyncClient")
 
 set(CMAKE_AUTOMOC ON)
 
-set(CMAKE_CXX_STANDARD 17)
+set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
@@ -17,12 +17,13 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 if(DEFINED ENV{Qt${QT_MAJOR_VERSION}_HOME})
     message(STATUS "Looking for Qt in: " $ENV{Qt${QT_MAJOR_VERSION}_HOME})
 else()
-    message(STATUS "Qt${QT_MAJOR_VERSION}_HOME environment variable not set. Checking default paths.")
+    message(STATUS
+        "Qt${QT_MAJOR_VERSION}
+        _HOME environment variable not set. Checking default paths.")
 endif()
 
-#find_package should find everything fine so long as the ENV Variable is set or, for linux systems,
-#it is in the default install path.
-find_package(Qt${QT_MAJOR_VERSION} COMPONENTS Widgets REQUIRED PATHS $ENV{Qt${QT_MAJOR_VERSION}_HOME})
+find_package(Qt${QT_MAJOR_VERSION} COMPONENTS Widgets
+    REQUIRED PATHS $ENV{Qt${QT_MAJOR_VERSION}_HOME})
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release"
@@ -32,7 +33,7 @@ if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
 endif()
 
 add_executable(${TARGET_NAME}
-    include/window.hpp
+    include/window.h
     src/window.cpp
     src/main.cpp)
 
@@ -64,4 +65,5 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 )
 
 #Add any extra libs to link also.
-target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_MAJOR_VERSION}::Widgets)
+target_link_libraries(${TARGET_NAME}
+    PRIVATE Qt${QT_MAJOR_VERSION}::Widgets)

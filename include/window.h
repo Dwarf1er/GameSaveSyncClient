@@ -4,7 +4,7 @@
 #include <QLabel>
 #include <QPushButton>
 
-class Tester : public QMainWindow
+class GameSaveSyncClient : public QMainWindow
 {
     Q_OBJECT
 
@@ -16,8 +16,8 @@ class Tester : public QMainWindow
     void updateLabelText();
 
 public:
-    Tester(QWidget* parent = nullptr);
-    ~Tester() = default;
+    GameSaveSyncClient(QWidget* parent = nullptr);
+    ~GameSaveSyncClient() = default;
 
 signals:
     void sigLabelTextUpdated(std::string_view);
