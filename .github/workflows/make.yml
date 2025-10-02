@@ -1,0 +1,40 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        config: [Debug, Release]
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install Qt
+        uses: jurplel/install-qt-action@v4
+
+      - name: Configure CMake
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            cmake -S . -B build -G "Visual Studio 17 2022" -A x64 -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+          else
+            cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=${{ matrix.config }}
+          fi
+        shell: bash
+
+      - name: Build
+        run: |
+          if [ "${{ matrix.os }}" = "windows-latest" ]; then
+            cmake --build build --config ${{ matrix.config }}
+          else
+            cmake --build build --config ${{ matrix.config }}
+          fi
+        shell: bash
