@@ -1,10 +1,14 @@
-#include "window.h"
+#include "gameSyncServerUtil.h"
+#include "mainWindow.h"
 #include <QApplication>
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
 
-    GameSaveSyncClient gameSaveSyncClient;
+    GameSyncServerUtil::getInstance().setServerURL(
+        QUrl("http://localhost:3000"));
+
+    MainWindow gameSaveSyncClient;
     gameSaveSyncClient.show();
 
     app.exec();

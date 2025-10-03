@@ -29,6 +29,8 @@ endif()
 
 find_package(Qt${QT_MAJOR_VERSION} COMPONENTS Widgets
     REQUIRED PATHS $ENV{Qt${QT_MAJOR_VERSION}_HOME})
+find_package(Qt${QT_MAJOR_VERSION} COMPONENTS Network
+    REQUIRED PATHS $ENV{Qt${QT_MAJOR_VERSION}_HOME})
 
 if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Release"
@@ -38,10 +40,14 @@ if(NOT CMAKE_CONFIGURATION_TYPES AND NOT CMAKE_BUILD_TYPE)
 endif()
 
 add_executable(${TARGET_NAME}
-    ui/main_window.ui
-    include/window.h
-    src/window.cpp
-    src/main.cpp)
+    include/addGameDialog.h
+    include/gameSyncServerUtil.h
+    include/mainWindow.h
+    src/addGameDialog.cpp
+    src/gameSyncServerUtil.cpp
+    src/main.cpp
+    src/mainWindow.cpp
+)
 
 target_compile_definitions(${TARGET_NAME} PRIVATE
   $<$<CONFIG:Debug>:DEBUG QT_DEBUG>
@@ -64,8 +70,10 @@ else()
   )
 endif()
 
-target_include_directories(${TARGET_NAME} PRIVATE ${Qt${QT_MAJOR_VERSION}_INCLUDE_DIRS})
-target_include_directories(${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include)
+target_include_directories(
+    ${TARGET_NAME} PRIVATE ${Qt${QT_MAJOR_VERSION}_INCLUDE_DIRS}
+    ${TARGET_NAME} PRIVATE ${CMAKE_SOURCE_DIR}/include
+)
 
 set_target_properties(${TARGET_NAME} PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY_DEBUG   "${CMAKE_BINARY_DIR}/bin/Debug"
@@ -73,5 +81,5 @@ set_target_properties(${TARGET_NAME} PROPERTIES
 )
 
 #Add any extra libs to link also.
-target_link_libraries(${TARGET_NAME}
-    PRIVATE Qt${QT_MAJOR_VERSION}::Widgets)
+target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_MAJOR_VERSION}::Widgets)
+target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_MAJOR_VERSION}::Network)
