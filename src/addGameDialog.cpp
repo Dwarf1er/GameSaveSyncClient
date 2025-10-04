@@ -14,7 +14,6 @@
 #include <qobject.h>
 #include <qpushbutton.h>
 #include <tuple>
-#include <unistd.h>
 
 QJsonDocument getRemoteGameList() {
     return GameSyncServerUtil::getInstance().getGameMetadataList();
