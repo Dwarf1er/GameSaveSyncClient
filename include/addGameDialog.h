@@ -5,6 +5,7 @@
 #include <QListWidget>
 #include <QSplitter>
 #include <QTreeView>
+#include <qpushbutton.h>
 
 class AddGameDialog : public QDialog {
     Q_OBJECT
@@ -18,4 +19,6 @@ class AddGameDialog : public QDialog {
     QListWidget* syncList;
     QTreeView* detailsView;
     QJsonDocument remoteGameList;
+    QPushButton* cancelButton;
+    QPushButton* addButton;
 };

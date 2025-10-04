@@ -1,5 +1,6 @@
 #include <QJsonDocument>
 #include <QUrl>
+#include <qjsondocument.h>
 
 class GameSyncServerUtil {
   public:
@@ -10,7 +11,7 @@ class GameSyncServerUtil {
     void setServerURL(QUrl url) { this->remoteUrl = url; }
     QUrl getServerURL() { return this->remoteUrl; }
 
-    QJsonDocument getGameMetadataList();
+    QJsonDocument getGameMetadataList(bool forceFetch = false);
 
     GameSyncServerUtil(GameSyncServerUtil const&) = delete;
     GameSyncServerUtil& operator=(GameSyncServerUtil const&) = delete;
@@ -21,4 +22,5 @@ class GameSyncServerUtil {
 
   private:
     QUrl remoteUrl;
+    QJsonDocument gameMetadataList;
 };

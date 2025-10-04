@@ -9,6 +9,7 @@
 #include <QSplitter>
 #include <QTreeView>
 #include <QtLogging>
+#include <qlogging.h>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     mainMenuBar = new QMenuBar(this);
@@ -35,6 +36,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 void MainWindow::addGameDialogOpen() {
     AddGameDialog dialog = new AddGameDialog(this);
     dialog.exec();
+    qInfo() << dialog.result();
 }
 
 MainWindow::~MainWindow() {}
