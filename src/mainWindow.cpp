@@ -1,16 +1,21 @@
+// GameSaveSyncClient/src/mainWindow.cpp
 #include "mainWindow.h"
 #include "addGameDialog.h"
 #include "config.h"
 #include "gameSyncServerUtil.h"
 #include <QAction>
+#include <QCloseEvent>
 #include <QIcon>
 #include <QKeySequence>
 #include <QListWidget>
+#include <QMenu>
 #include <QMenuBar>
 #include <QSizePolicy>
 #include <QSplitter>
+#include <QSystemTrayIcon>
 #include <QTreeView>
 #include <QtLogging>
+#include <qapplication.h>
 #include <qjsonobject.h>
 #include <qlogging.h>
 
@@ -34,6 +39,25 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     detailsView = new QTreeView(mainSplitter);
 
     setCentralWidget(mainSplitter);
+
+    // ---- Tray icon ----------------------------------------------
+    trayIcon =
+        new QSystemTrayIcon(QIcon::fromTheme("applications-system"), this);
+    trayMenu = new QMenu(this);
+
+    showAction = new QAction("Show", this);
+    quitAction = new QAction("Quit", this);
+
+    connect(showAction, &QAction::triggered, this, &MainWindow::showWindow);
+    connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
+
+    trayMenu->addAction(showAction);
+    trayMenu->addSeparator();
+    trayMenu->addAction(quitAction);
+    trayIcon->setContextMenu(trayMenu);
+    trayIcon->setToolTip("GameSaveSyncClient");
+    trayIcon->show();
+    // -------------------------------------------------------------
 
     refreshFromIDFromConfig();
 }
@@ -74,6 +98,23 @@ void MainWindow::refreshFromIDFromConfig() {
         item->setData(Qt::UserRole, std::get<int>(value));
         syncList->addItem(item);
     }
+}
+
+void MainWindow::showWindow() {
+    this->show();
+    this->raise();
+    this->activateWindow();
+}
+
+void MainWindow::onSyncFinished() { refreshFromIDFromConfig(); }
+
+void MainWindow::onErrorOccurred(QString msg) {
+    qWarning() << "Background sync error:" << msg;
+}
+
+void MainWindow::closeEvent(QCloseEvent* event) {
+    this->hide();
+    event->ignore(); // Don't close the window
 }
 
 MainWindow::~MainWindow() {}

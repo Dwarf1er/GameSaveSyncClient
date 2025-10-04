@@ -41,10 +41,12 @@ endif()
 
 add_executable(${TARGET_NAME}
     include/addGameDialog.h
+    include/backgroundSyncWorker.h
     include/config.h
     include/gameSyncServerUtil.h
     include/mainWindow.h
     src/addGameDialog.cpp
+    src/backgroundSyncWorker.cpp
     src/config.cpp
     src/gameSyncServerUtil.cpp
     src/main.cpp
