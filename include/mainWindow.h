@@ -25,6 +25,8 @@ class MainWindow : public QMainWindow {
     QMenu* syncMenu;
     QAction* addGameDialogAction;
 
+    void refreshFromIDFromConfig();
+
   private slots:
     void addGameDialogOpen();
 };

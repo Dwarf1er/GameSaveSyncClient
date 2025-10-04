@@ -1,11 +1,13 @@
 #include "gameSyncServerUtil.h"
 #include <QDebug>
 #include <QEventLoop>
+#include <QJsonArray>
 #include <QJsonParseError>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <qjsondocument.h>
+#include <qjsonobject.h>
 
 QJsonDocument GameSyncServerUtil::getGameMetadataList(bool forceFetch) {
     if (forceFetch || gameMetadataList.isEmpty()) {
@@ -40,4 +42,15 @@ QJsonDocument GameSyncServerUtil::getGameMetadataList(bool forceFetch) {
         gameMetadataList = doc;
     }
     return gameMetadataList;
+}
+
+QJsonObject GameSyncServerUtil::getGameMetadata(int gameID) {
+    QJsonDocument document = getGameMetadataList();
+    for (const QJsonValue& innerVal : document.array()) {
+        QJsonObject object = innerVal.toObject();
+        if (gameID == object.value(GameSyncServerUtil::id).toInt()) {
+            return object;
+        }
+    }
+    return QJsonObject();
 }

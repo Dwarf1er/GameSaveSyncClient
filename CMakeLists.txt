@@ -41,9 +41,11 @@ endif()
 
 add_executable(${TARGET_NAME}
     include/addGameDialog.h
+    include/config.h
     include/gameSyncServerUtil.h
     include/mainWindow.h
     src/addGameDialog.cpp
+    src/config.cpp
     src/gameSyncServerUtil.cpp
     src/main.cpp
     src/mainWindow.cpp

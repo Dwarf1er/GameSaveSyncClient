@@ -26,7 +26,8 @@ void addRemoteGameListToSyncList(QJsonDocument doc, QListWidget* list) {
     for (const QJsonValue& innerVal : outerArray) {
         QJsonObject object = innerVal.toObject();
 
-        QString defaultName = object.value("default_name").toString();
+        QString defaultName =
+            object.value(GameSyncServerUtil::default_name).toString();
         int id = object.value("id").toInt();
 
         defaultNames.push_back({id, defaultName});
