@@ -1,14 +1,22 @@
+#pragma once
+
 #include <QJsonDocument>
 #include <QUrl>
+#include <qcontainerfwd.h>
+#include <qjsonarray.h>
 #include <qjsondocument.h>
 #include <qjsonobject.h>
 #include <qkeysequence.h>
+#include <qmap.h>
 #include <qstringview.h>
 
 class GameSyncServerUtil {
   public:
     static constexpr QStringView default_name = u"default_name";
     static constexpr QStringView id = u"id";
+    static constexpr QStringView windowsOS = u"windows";
+    static constexpr QStringView linuxOS = u"linux";
+    static constexpr QStringView undefined = u"undefined";
 
     static GameSyncServerUtil& getInstance() {
         static GameSyncServerUtil instance;
@@ -19,6 +27,8 @@ class GameSyncServerUtil {
 
     QJsonDocument getGameMetadataList(bool forceFetch = false);
     QJsonObject getGameMetadata(int id);
+    QJsonDocument getPathByGameId(int id, bool forceFetch = false);
+    QJsonDocument getExecutableByGameId(int id, bool forceFetch = false);
 
     GameSyncServerUtil(GameSyncServerUtil const&) = delete;
     GameSyncServerUtil& operator=(GameSyncServerUtil const&) = delete;
@@ -30,4 +40,8 @@ class GameSyncServerUtil {
   private:
     QUrl remoteUrl;
     QJsonDocument gameMetadataList;
+    QMap<int, QJsonDocument> gamePathMap;
+    QMap<int, QJsonDocument> gameExecutableMap;
+
+    QJsonDocument fetchRemoteEndpoint(QString endpoint);
 };

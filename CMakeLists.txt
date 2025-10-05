@@ -43,11 +43,13 @@ add_executable(${TARGET_NAME}
     include/addGameDialog.h
     include/backgroundSyncWorker.h
     include/config.h
+    include/detailsViewWidget.h
     include/gameSyncServerUtil.h
     include/mainWindow.h
     src/addGameDialog.cpp
     src/backgroundSyncWorker.cpp
     src/config.cpp
+    src/detailsViewWidget.cpp
     src/gameSyncServerUtil.cpp
     src/main.cpp
     src/mainWindow.cpp

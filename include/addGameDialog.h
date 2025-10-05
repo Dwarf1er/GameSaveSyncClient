@@ -15,9 +15,7 @@ class AddGameDialog : public QDialog {
     ~AddGameDialog();
 
   private:
-    QSplitter* mainSplitter;
     QListWidget* syncList;
-    QTreeView* detailsView;
     QJsonDocument remoteGameList;
     QPushButton* cancelButton;
     QPushButton* addButton;

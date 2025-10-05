@@ -52,15 +52,12 @@ AddGameDialog::AddGameDialog(QWidget* parent) : QDialog(parent) {
     remoteGameList = getRemoteGameList();
     setMinimumSize({500, 200});
 
-    mainSplitter = new QSplitter(this);
-    mainSplitter->setSizePolicy(
-        {QSizePolicy::Expanding, QSizePolicy::Expanding});
-    syncList = new QListWidget(mainSplitter);
+    syncList = new QListWidget(this);
+    syncList->setSelectionMode(QAbstractItemView::SingleSelection);
     addRemoteGameListToSyncList(remoteGameList, syncList);
-    detailsView = new QTreeView(mainSplitter);
 
     setLayout(new QVBoxLayout(this));
-    layout()->addWidget(mainSplitter);
+    layout()->addWidget(syncList);
 
     QHBoxLayout* buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch();

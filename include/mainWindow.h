@@ -1,5 +1,6 @@
 #pragma once
 
+#include "detailsViewWidget.h"
 #include <QAction>
 #include <QCloseEvent>
 #include <QLabel>
@@ -17,12 +18,12 @@ class MainWindow : public QMainWindow {
 
   public:
     MainWindow(QWidget* parent = nullptr);
-    ~MainWindow() override;
+    ~MainWindow() override = default;
 
   private:
     QSplitter* mainSplitter;
     QListWidget* syncList;
-    QTreeView* detailsView;
+    DetailsViewWidget* detailsView;
     QMenuBar* mainMenuBar;
     QMenu* syncMenu;
     QAction* addGameDialogAction;

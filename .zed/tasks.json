@@ -18,5 +18,11 @@
     "cwd": "$ZED_WORKTREE_ROOT/build",
     "hide": "on_success",
     "args": ["-j16"]
+  },
+  {
+    "label": "CMake Clean",
+    "command": "cmake --build . --target clean",
+    "cwd": "$ZED_WORKTREE_ROOT/build",
+    "hide": "on_success"
   }
 ]

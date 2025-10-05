@@ -1,7 +1,7 @@
-// GameSaveSyncClient/src/mainWindow.cpp
 #include "mainWindow.h"
 #include "addGameDialog.h"
 #include "config.h"
+#include "detailsViewWidget.h"
 #include "gameSyncServerUtil.h"
 #include <QAction>
 #include <QCloseEvent>
@@ -13,11 +13,12 @@
 #include <QSizePolicy>
 #include <QSplitter>
 #include <QSystemTrayIcon>
-#include <QTreeView>
 #include <QtLogging>
 #include <qapplication.h>
 #include <qjsonobject.h>
+#include <qlistwidget.h>
 #include <qlogging.h>
+#include <qnamespace.h>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     mainMenuBar = new QMenuBar(this);
@@ -36,11 +37,18 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     mainSplitter = new QSplitter(this);
     mainSplitter->setSizePolicy({QSizePolicy::Maximum, QSizePolicy::Maximum});
     syncList = new QListWidget(mainSplitter);
-    detailsView = new QTreeView(mainSplitter);
+    syncList->setSelectionMode(QAbstractItemView::SingleSelection);
+    detailsView = new DetailsViewWidget(mainSplitter);
 
     setCentralWidget(mainSplitter);
+    connect(syncList, &QListWidget::itemSelectionChanged, this, [this]() {
+        if (auto item = syncList->currentItem()) {
+            const int id = item->data(Qt::UserRole).toInt();
+            qDebug() << "Selected id:" << id;
+            this->detailsView->setGameID(id);
+        }
+    });
 
-    // ---- Tray icon ----------------------------------------------
     trayIcon =
         new QSystemTrayIcon(QIcon::fromTheme("applications-system"), this);
     trayMenu = new QMenu(this);
@@ -57,14 +65,13 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     trayIcon->setContextMenu(trayMenu);
     trayIcon->setToolTip("GameSaveSyncClient");
     trayIcon->show();
-    // -------------------------------------------------------------
 
     refreshFromIDFromConfig();
 }
 
 void MainWindow::addGameDialogOpen() {
-    AddGameDialog dialog = new AddGameDialog(this);
-    int id = dialog.exec();
+    AddGameDialog* dialog = new AddGameDialog(this);
+    int id = dialog->exec();
     if (id == 0)
         return;
     config::addId(id);
@@ -98,6 +105,10 @@ void MainWindow::refreshFromIDFromConfig() {
         item->setData(Qt::UserRole, std::get<int>(value));
         syncList->addItem(item);
     }
+
+    if (syncList->count() && syncList->selectedItems().empty()) {
+        syncList->setCurrentRow(0);
+    }
 }
 
 void MainWindow::showWindow() {
@@ -114,7 +125,5 @@ void MainWindow::onErrorOccurred(QString msg) {
 
 void MainWindow::closeEvent(QCloseEvent* event) {
     this->hide();
-    event->ignore(); // Don't close the window
+    event->ignore();
 }
-
-MainWindow::~MainWindow() {}
