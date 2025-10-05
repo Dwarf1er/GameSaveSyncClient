@@ -66,7 +66,7 @@ if(MSVC)
     target_compile_options(${TARGET_NAME} PRIVATE
     $<$<CONFIG:Debug>:/Zi /Od>
     $<$<CONFIG:Release>:/O2>
-    /W4 /WX
+    /W4 /WX /wd4458
   )
 else()
     target_compile_options(${TARGET_NAME} PRIVATE
