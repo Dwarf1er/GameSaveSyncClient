@@ -12,7 +12,7 @@
 
 class GameSyncServerUtil {
   public:
-    static constexpr QStringView default_name = u"default_name";
+    static constexpr QStringView defaultName = u"default_name";
     static constexpr QStringView id = u"id";
     static constexpr QStringView windowsOS = u"windows";
     static constexpr QStringView linuxOS = u"linux";

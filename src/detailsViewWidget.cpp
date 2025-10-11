@@ -17,18 +17,19 @@ DetailsViewWidget::DetailsViewWidget(QWidget* parent) : QWidget(parent) {
     this->layout()->addWidget(executableList);
 }
 
-void DetailsViewWidget::setGameID(int id) {
-    gameID = id;
+void DetailsViewWidget::setGameID(int GameID) {
+    this->gameID = GameID;
     refresh();
 }
 
 void DetailsViewWidget::refresh() {
-    if (gameID == 0)
+    if (gameID == 0) {
         return;
+    }
 
     gameNameLabel->setText(GameSyncServerUtil::getInstance()
                                .getGameMetadata(gameID)
-                               .value(GameSyncServerUtil::default_name)
+                               .value(GameSyncServerUtil::defaultName)
                                .toString());
 
     QJsonDocument pathDoc =

@@ -86,10 +86,10 @@ void MainWindow::refreshFromIDFromConfig() {
     for (auto& id : config::returnAllIds()) {
         QJsonObject gameMetadata =
             GameSyncServerUtil::getInstance().getGameMetadata(id);
-        QString default_name =
-            gameMetadata.value(GameSyncServerUtil::default_name).toString();
+        QString defaultName =
+            gameMetadata.value(GameSyncServerUtil::defaultName).toString();
 
-        defaultNames.push_back({id, default_name});
+        defaultNames.push_back({id, defaultName});
     }
 
     std::sort(defaultNames.begin(), defaultNames.end(),

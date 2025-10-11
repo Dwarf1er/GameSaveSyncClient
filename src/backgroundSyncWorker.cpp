@@ -1,6 +1,8 @@
 #include "backgroundSyncWorker.h"
 #include "gameSyncServerUtil.h"
 
+constexpr int timerInterval = 30 * 1000;
+
 void BackgroundSyncWorker::start() {
     try {
         GameSyncServerUtil::getInstance().getGameMetadataList();
@@ -17,6 +19,6 @@ void BackgroundSyncWorker::start() {
             emit errorOccurred(QString::fromStdString(e.what()));
         }
     });
-    timer->setInterval(30 * 1000);
+    timer->setInterval(timerInterval);
     timer->start();
 }
