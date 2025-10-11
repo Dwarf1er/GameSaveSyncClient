@@ -3,10 +3,13 @@
 #include "mainWindow.h"
 #include <QApplication>
 #include <QThread>
+#include <qcoreapplication.h>
 #include <qurl.h>
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
+    QCoreApplication::setOrganizationName("GameSaveSync");
+    QCoreApplication::setApplicationName("GameSaveSyncClient");
 
     GameSyncServerUtil::getInstance().setServerURL(
         QUrl("http://localhost:3000"));

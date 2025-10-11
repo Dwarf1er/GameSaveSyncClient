@@ -17,8 +17,8 @@ DetailsViewWidget::DetailsViewWidget(QWidget* parent) : QWidget(parent) {
     this->layout()->addWidget(executableList);
 }
 
-void DetailsViewWidget::setGameID(int GameID) {
-    this->gameID = GameID;
+void DetailsViewWidget::setGameID(int gameID) {
+    this->gameID = gameID;
     refresh();
 }
 
