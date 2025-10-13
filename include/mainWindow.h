@@ -29,6 +29,7 @@ class MainWindow : public QMainWindow {
     QAction* removeGameFromSyncAction;
     QListWidget* syncList;
     QMenu* syncMenu;
+    QMenu* fileMenu;
     QMenu* trayMenu;
     QMenuBar* mainMenuBar;
     QSplitter* mainSplitter;

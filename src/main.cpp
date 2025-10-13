@@ -14,7 +14,6 @@ int main(int argc, char* argv[]) {
     GameSyncServerUtil::getInstance().setServerURL(
         QUrl("http://localhost:3000"));
 
-    // Don't quit automatically when the last window is closed
     app.setQuitOnLastWindowClosed(false);
 
     QThread* workerThread = new QThread;

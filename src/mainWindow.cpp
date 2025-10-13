@@ -26,6 +26,12 @@
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     mainMenuBar = new QMenuBar(this);
 
+    quitAction = new QAction("Quit", this);
+    quitAction->setShortcut(QKeySequence::Quit);
+
+    fileMenu = mainMenuBar->addMenu("&File");
+    fileMenu->addAction(quitAction);
+
     syncMenu = mainMenuBar->addMenu("&Sync");
     addGameDialogAction = new QAction(
         QIcon::fromTheme(QIcon::ThemeIcon::DocumentNew), "&Add new game", this);
@@ -65,7 +71,6 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     trayMenu = new QMenu(this);
 
     showAction = new QAction("Show", this);
-    quitAction = new QAction("Quit", this);
 
     connect(showAction, &QAction::triggered, this, &MainWindow::showWindow);
     connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
