@@ -6,13 +6,6 @@
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <algorithm>
-#include <qboxlayout.h>
-#include <qcontainerfwd.h>
-#include <qjsonobject.h>
-#include <qlistwidget.h>
-#include <qnamespace.h>
-#include <qobject.h>
-#include <qpushbutton.h>
 #include <tuple>
 
 QJsonDocument getRemoteGameList() {

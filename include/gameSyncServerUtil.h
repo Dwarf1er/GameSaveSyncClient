@@ -1,14 +1,8 @@
 #pragma once
 
 #include <QJsonDocument>
+#include <QMap>
 #include <QUrl>
-#include <qcontainerfwd.h>
-#include <qjsonarray.h>
-#include <qjsondocument.h>
-#include <qjsonobject.h>
-#include <qkeysequence.h>
-#include <qmap.h>
-#include <qstringview.h>
 
 class GameSyncServerUtil {
   public:

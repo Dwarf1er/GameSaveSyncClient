@@ -1,10 +1,8 @@
 #pragma once
 
-#include <qlabel.h>
-#include <qlistview.h>
-#include <qlistwidget.h>
-#include <qpushbutton.h>
-#include <qwidget.h>
+#include <QLabel>
+#include <QListWidget>
+#include <QWidget>
 
 class DetailsViewWidget : public QWidget {
     Q_OBJECT

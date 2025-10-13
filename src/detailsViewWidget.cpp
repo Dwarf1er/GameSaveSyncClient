@@ -1,10 +1,8 @@
 #include "detailsViewWidget.h"
 #include "gameSyncServerUtil.h"
-#include <qboxlayout.h>
-#include <qjsondocument.h>
-#include <qlabel.h>
-#include <qlistwidget.h>
-#include <qwidget.h>
+#include <QJsonArray>
+#include <QJsonObject>
+#include <QVBoxLayout>
 
 DetailsViewWidget::DetailsViewWidget(QWidget* parent) : QWidget(parent) {
     setLayout(new QVBoxLayout());

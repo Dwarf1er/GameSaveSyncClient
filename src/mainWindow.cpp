@@ -4,8 +4,10 @@
 #include "detailsViewWidget.h"
 #include "gameSyncServerUtil.h"
 #include <QAction>
+#include <QApplication>
 #include <QCloseEvent>
 #include <QIcon>
+#include <QJsonObject>
 #include <QKeySequence>
 #include <QListWidget>
 #include <QMenu>
@@ -14,14 +16,6 @@
 #include <QSplitter>
 #include <QSystemTrayIcon>
 #include <QtLogging>
-#include <qaction.h>
-#include <qapplication.h>
-#include <qicon.h>
-#include <qjsonobject.h>
-#include <qkeysequence.h>
-#include <qlistwidget.h>
-#include <qlogging.h>
-#include <qnamespace.h>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     mainMenuBar = new QMenuBar(this);

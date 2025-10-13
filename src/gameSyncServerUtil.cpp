@@ -2,15 +2,11 @@
 #include <QDebug>
 #include <QEventLoop>
 #include <QJsonArray>
+#include <QJsonObject>
 #include <QJsonParseError>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <qcontainerfwd.h>
-#include <qjsonarray.h>
-#include <qjsondocument.h>
-#include <qjsonobject.h>
-#include <qlogging.h>
 
 QJsonDocument GameSyncServerUtil::fetchRemoteEndpoint(QString endpoint) {
     QNetworkAccessManager manager;

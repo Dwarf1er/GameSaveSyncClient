@@ -5,7 +5,6 @@
 #include <QListWidget>
 #include <QSplitter>
 #include <QTreeView>
-#include <qpushbutton.h>
 
 class AddGameDialog : public QDialog {
     Q_OBJECT

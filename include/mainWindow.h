@@ -12,7 +12,6 @@
 #include <QSplitter>
 #include <QSystemTrayIcon>
 #include <QTreeView>
-#include <qaction.h>
 
 class MainWindow : public QMainWindow {
     Q_OBJECT
