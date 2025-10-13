@@ -14,8 +14,11 @@
 #include <QSplitter>
 #include <QSystemTrayIcon>
 #include <QtLogging>
+#include <qaction.h>
 #include <qapplication.h>
+#include <qicon.h>
 #include <qjsonobject.h>
+#include <qkeysequence.h>
 #include <qlistwidget.h>
 #include <qlogging.h>
 #include <qnamespace.h>
@@ -31,6 +34,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     connect(addGameDialogAction, &QAction::triggered, this,
             &MainWindow::addGameDialogOpen);
     syncMenu->addAction(addGameDialogAction);
+
+    removeGameFromSyncAction = new QAction(
+        QIcon::fromTheme(QIcon::ThemeIcon::EditDelete), "&Remove game", this);
+    removeGameFromSyncAction->setShortcut(QKeySequence::Delete);
+    removeGameFromSyncAction->setStatusTip("Remove a game from the sync list");
+    connect(removeGameFromSyncAction, &QAction::triggered, this,
+            &MainWindow::removeGameFromSync);
+    syncMenu->addAction(removeGameFromSyncAction);
 
     setMenuBar(mainMenuBar);
 
@@ -76,6 +87,14 @@ void MainWindow::addGameDialogOpen() {
         return;
     config::addId(id);
 
+    refreshFromIDFromConfig();
+}
+
+void MainWindow::removeGameFromSync() {
+    if (auto item = syncList->currentItem()) {
+        const int id = item->data(Qt::UserRole).toInt();
+        config::removeId(id);
+    }
     refreshFromIDFromConfig();
 }
 
