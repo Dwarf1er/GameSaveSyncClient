@@ -16,6 +16,7 @@
 #include <QSplitter>
 #include <QSystemTrayIcon>
 #include <QtLogging>
+#include <algorithm>
 
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     mainMenuBar = new QMenuBar(this);
@@ -52,13 +53,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     detailsView = new DetailsViewWidget(mainSplitter);
 
     setCentralWidget(mainSplitter);
-    connect(syncList, &QListWidget::itemSelectionChanged, this, [this]() {
-        if (auto item = syncList->currentItem()) {
-            const int id = item->data(Qt::UserRole).toInt();
-            qDebug() << "Selected id:" << id;
-            this->detailsView->setGameID(id);
-        }
-    });
+    connect(syncList, &QListWidget::itemSelectionChanged, this,
+            [this]() -> void {
+                if (auto item = syncList->currentItem()) {
+                    const int id = item->data(Qt::UserRole).toInt();
+                    qDebug() << "Selected id:" << id;
+                    this->detailsView->setGameID(id);
+                }
+            });
 
     trayIcon =
         new QSystemTrayIcon(QIcon::fromTheme("applications-system"), this);
@@ -80,7 +82,7 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
 }
 
 void MainWindow::addGameDialogOpen() {
-    AddGameDialog* dialog = new AddGameDialog(this);
+    auto dialog = new AddGameDialog(this);
     int id = dialog->exec();
     if (id == 0)
         return;
@@ -110,16 +112,15 @@ void MainWindow::refreshFromIDFromConfig() {
         defaultNames.push_back({id, defaultName});
     }
 
-    std::sort(defaultNames.begin(), defaultNames.end(),
-              [](const auto& value1, const auto& value2) {
-                  return QString::compare(std::get<QString>(value1),
-                                          std::get<QString>(value2),
-                                          Qt::CaseInsensitive) < 0;
-              });
+    std::ranges::sort(defaultNames,
+                      [](const auto& value1, const auto& value2) -> int {
+                          return QString::compare(std::get<QString>(value1),
+                                                  std::get<QString>(value2),
+                                                  Qt::CaseInsensitive) < 0;
+                      });
 
     for (const auto& value : defaultNames) {
-        QListWidgetItem* item =
-            new QListWidgetItem(std::get<QString>(value), syncList);
+        auto item = new QListWidgetItem(std::get<QString>(value), syncList);
         item->setData(Qt::UserRole, std::get<int>(value));
         syncList->addItem(item);
     }

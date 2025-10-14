@@ -28,8 +28,8 @@ class GameSyncServerUtil {
     GameSyncServerUtil& operator=(GameSyncServerUtil const&) = delete;
 
   protected:
-    GameSyncServerUtil() {}
-    ~GameSyncServerUtil() {}
+    GameSyncServerUtil() = default;
+    ~GameSyncServerUtil() = default;
 
   private:
     QUrl remoteUrl;

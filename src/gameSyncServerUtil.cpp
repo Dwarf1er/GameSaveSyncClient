@@ -22,7 +22,7 @@ QJsonDocument GameSyncServerUtil::fetchRemoteEndpoint(QString endpoint) {
     if (reply->error() != QNetworkReply::NoError) {
         qWarning() << "Error fetching game metadata:" << reply->errorString();
         reply->deleteLater();
-        return QJsonDocument();
+        return {};
     }
 
     QByteArray data = reply->readAll();
@@ -32,7 +32,7 @@ QJsonDocument GameSyncServerUtil::fetchRemoteEndpoint(QString endpoint) {
     QJsonDocument doc = QJsonDocument::fromJson(data, &parseError);
     if (parseError.error != QJsonParseError::NoError) {
         qWarning() << "JSON parse error:" << parseError.errorString();
-        return QJsonDocument();
+        return {};
     }
 
     return doc;
@@ -53,7 +53,7 @@ QJsonObject GameSyncServerUtil::getGameMetadata(int gameID) {
             return object;
         }
     }
-    return QJsonObject();
+    return {};
 }
 
 QJsonDocument GameSyncServerUtil::getPathByGameId(int id, bool forceFetch) {

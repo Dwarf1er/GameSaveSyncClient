@@ -10,8 +10,8 @@ void BackgroundSyncWorker::start() {
         emit errorOccurred(QString::fromStdString(e.what()));
     }
 
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [this]() {
+    auto timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [this]() -> void {
         try {
             GameSyncServerUtil::getInstance().getGameMetadataList();
             emit syncFinished();

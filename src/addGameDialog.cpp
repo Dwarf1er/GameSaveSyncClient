@@ -26,16 +26,15 @@ void addRemoteGameListToSyncList(QJsonDocument doc, QListWidget* list) {
         defaultNames.push_back({id, defaultName});
     }
 
-    std::sort(defaultNames.begin(), defaultNames.end(),
-              [](const auto& value1, const auto& value2) {
-                  return QString::compare(std::get<QString>(value1),
-                                          std::get<QString>(value2),
-                                          Qt::CaseInsensitive) < 0;
-              });
+    std::ranges::sort(defaultNames,
+                      [](const auto& value1, const auto& value2) -> int {
+                          return QString::compare(std::get<QString>(value1),
+                                                  std::get<QString>(value2),
+                                                  Qt::CaseInsensitive) < 0;
+                      });
 
     for (const auto& value : defaultNames) {
-        QListWidgetItem* item =
-            new QListWidgetItem(std::get<QString>(value), list);
+        auto item = new QListWidgetItem(std::get<QString>(value), list);
         item->setData(Qt::UserRole, std::get<int>(value));
         list->addItem(item);
     }
@@ -52,14 +51,14 @@ AddGameDialog::AddGameDialog(QWidget* parent) : QDialog(parent) {
     setLayout(new QVBoxLayout(this));
     layout()->addWidget(syncList);
 
-    QHBoxLayout* buttonLayout = new QHBoxLayout();
+    auto buttonLayout = new QHBoxLayout();
     buttonLayout->addStretch();
     cancelButton = new QPushButton("Cancel", this);
     connect(cancelButton, &QPushButton::clicked, this,
-            [this]() { this->reject(); });
+            [this]() -> void { this->reject(); });
     buttonLayout->addWidget(cancelButton);
     addButton = new QPushButton("Add", this);
-    connect(addButton, &QPushButton::clicked, this, [this]() {
+    connect(addButton, &QPushButton::clicked, this, [this]() -> void {
         if (syncList->selectedItems().length() > 0) {
             this->done(
                 syncList->selectedItems().first()->data(Qt::UserRole).toInt());
@@ -69,4 +68,4 @@ AddGameDialog::AddGameDialog(QWidget* parent) : QDialog(parent) {
     layout()->addItem(buttonLayout);
 }
 
-AddGameDialog::~AddGameDialog() {}
+AddGameDialog::~AddGameDialog() = default;

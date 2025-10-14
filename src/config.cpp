@@ -13,11 +13,12 @@ void addId(int newId) {
 
 void removeId(int idToRemove) {
     QSettings settings = getConfig();
-    QVariantList ids = settings.value("ids").toList(); // current list
+    QVariantList ids = settings.value("ids").toList();
 
-    const auto iter = std::ranges::find_if(ids, [&](const QVariant& variant) {
-        return variant.toInt() == idToRemove;
-    });
+    const auto iter =
+        std::ranges::find_if(ids, [&](const QVariant& variant) -> bool {
+            return variant.toInt() == idToRemove;
+        });
 
     if (iter != ids.end()) {
         ids.erase(iter);

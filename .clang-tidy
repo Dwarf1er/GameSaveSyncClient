@@ -1,7 +1,8 @@
 Checks: >
     -*,
-    bugprone-*
+    bugprone-*,
     clang-diagnostic-*,
+    modernize-*,
     readability-identifier-naming,
 
 CheckOptions:
@@ -19,3 +20,5 @@ CheckOptions:
     value:           CamelCase
   - key:             readability-identifier-naming.VariableCase
     value:           camelBack
+  - key:             modernize-use-trailing-return-type.TransformFunctions
+    value:           false

@@ -14,15 +14,15 @@ int main(int argc, char* argv[]) {
 
     app.setQuitOnLastWindowClosed(false);
 
-    QThread* workerThread = new QThread;
-    BackgroundSyncWorker* worker = new BackgroundSyncWorker;
+    auto workerThread = new QThread;
+    auto worker = new BackgroundSyncWorker;
     worker->moveToThread(workerThread);
 
     QObject::connect(workerThread, &QThread::started, worker,
                      &BackgroundSyncWorker::start);
 
     // Optional: connect worker signals to UI updates
-    MainWindow* mw = new MainWindow;
+    auto mw = new MainWindow;
     QObject::connect(worker, &BackgroundSyncWorker::syncFinished, mw,
                      &MainWindow::onSyncFinished);
     QObject::connect(worker, &BackgroundSyncWorker::errorOccurred, mw,

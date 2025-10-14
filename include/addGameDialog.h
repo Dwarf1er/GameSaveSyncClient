@@ -11,7 +11,7 @@ class AddGameDialog : public QDialog {
 
   public:
     AddGameDialog(QWidget* parent = nullptr);
-    ~AddGameDialog();
+    ~AddGameDialog() override;
 
   private:
     QListWidget* syncList;
