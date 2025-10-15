@@ -4,7 +4,10 @@
 
 namespace config {
 inline QSettings getConfig() { return QSettings(); }
-void addId(int newId);
 QList<int> returnAllIds();
+QString getPath(int pathID);
+void addId(int newId);
 void removeId(int idToRemove);
+void removePath(int pathID);
+void updatePath(int pathID, QString path);
 } // namespace config

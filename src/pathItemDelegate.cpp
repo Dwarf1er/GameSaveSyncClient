@@ -18,7 +18,8 @@ QWidget* PathItemDelegate::createEditor(QWidget* parent,
 
 void PathItemDelegate::setEditorData(QWidget* editor,
                                      const QModelIndex& index) const {
-    QString value = index.model()->data(index, Qt::DisplayRole).toString();
+    QString value =
+        index.model()->data(index, PathListModel::ConfigPathRole).toString();
 
     auto* lineEdit = editor->findChild<QLineEdit*>();
     if (lineEdit) {
@@ -30,6 +31,6 @@ void PathItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
                                     const QModelIndex& index) const {
     auto* lineEdit = editor->findChild<QLineEdit*>();
     if (lineEdit) {
-        model->setData(index, lineEdit->text(), Qt::EditRole);
+        model->setData(index, lineEdit->text(), PathListModel::ConfigPathRole);
     }
 }

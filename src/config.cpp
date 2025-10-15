@@ -35,4 +35,23 @@ QList<int> returnAllIds() {
     }
     return idList;
 }
+
+inline QString getPathKey(int pathID) {
+    return "Path: " + QString::number(pathID);
+}
+
+void updatePath(int pathID, QString path) {
+    QSettings settings = config::getConfig();
+    settings.setValue(getPathKey(pathID), path);
+}
+void removePath(int pathID) {
+    QSettings settings = config::getConfig();
+    settings.remove(getPathKey(pathID));
+}
+
+QString getPath(int pathID) {
+    QSettings settings = config::getConfig();
+    return settings.value(getPathKey(pathID), QString{}).toString();
+}
+
 } // namespace config

@@ -1,5 +1,7 @@
 #include "pathListModel.h"
+#include "config.h"
 #include "gameSyncServerUtil.h"
+#include <QBrush>
 #include <QJsonArray>
 #include <QJsonObject>
 
@@ -18,15 +20,59 @@ QVariant PathListModel::data(const QModelIndex& index, int role) const {
     const PathItem& item = pathItems.at(index.row());
     switch (role) {
     case Qt::DisplayRole:
+        if (item.configPath.isEmpty())
+            return item.dbPath;
+        else
+            return item.configPath;
     case Role::DbPathRole:
         return item.dbPath;
     case Role::IdRole:
         return item.id;
     case Role::ConfigPathRole:
         return item.configPath;
+    case Qt::BackgroundRole:
+        if (item.configPath.isEmpty()) {
+            return QBrush(QColor(255, 0, 0, 40));
+        }
+        return {};
+    case Qt::ForegroundRole:
+        if (item.configPath.isEmpty()) {
+            return QBrush(Qt::gray);
+        }
+        return {};
     default:
         return {};
     }
+}
+
+bool PathListModel::setData(const QModelIndex& index, const QVariant& value,
+                            int role) {
+    if (!index.isValid() || index.row() < 0 || index.row() >= pathItems.size())
+        return false;
+
+    PathItem& item = pathItems[index.row()];
+    bool changed = false;
+
+    if (role == Role::ConfigPathRole || role == Qt::EditRole) {
+        const QString newVal = value.toString();
+        if (item.configPath != newVal) {
+            item.configPath = newVal;
+            changed = true;
+            if (item.configPath.isEmpty())
+                config::removePath(item.id);
+            else
+                config::updatePath(item.id, item.configPath);
+        }
+    }
+
+    if (changed) {
+        emit dataChanged(
+            index, index,
+            {Role::ConfigPathRole, Qt::BackgroundRole, Qt::ForegroundRole});
+        return true;
+    }
+
+    return false;
 }
 
 Qt::ItemFlags PathListModel::flags(const QModelIndex& index) const {
@@ -59,6 +105,7 @@ void PathListModel::loadForGame(int gameID) {
         PathItem item;
         item.id = obj.value("id").toInt();
         item.dbPath = obj.value("path").toString();
+        item.configPath = config::getPath(item.id);
         pathItems.append(item);
     }
 
