@@ -1,6 +1,8 @@
 #pragma once
 
+#include "pathListModel.h"
 #include <QLabel>
+#include <QListView>
 #include <QListWidget>
 #include <QWidget>
 
@@ -13,8 +15,9 @@ class DetailsViewWidget : public QWidget {
     void refresh();
 
   private:
-    int gameID = 0;
+    PathListModel* pathModel;
     QLabel* gameNameLabel;
-    QListWidget* pathList;
+    QListView* pathList;
     QListWidget* executableList;
+    int gameID = 0;
 };

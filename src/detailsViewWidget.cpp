@@ -1,5 +1,6 @@
 #include "detailsViewWidget.h"
 #include "gameSyncServerUtil.h"
+#include "pathItemDelegate.h"
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QVBoxLayout>
@@ -7,7 +8,11 @@
 DetailsViewWidget::DetailsViewWidget(QWidget* parent) : QWidget(parent) {
     setLayout(new QVBoxLayout());
     gameNameLabel = new QLabel(this);
-    pathList = new QListWidget(this);
+    pathModel = new PathListModel(this);
+    pathList = new QListView(this);
+    pathList->setModel(pathModel);
+    pathList->setEditTriggers(QAbstractItemView::AllEditTriggers);
+    pathList->setItemDelegate(new PathItemDelegate());
     executableList = new QListWidget(this);
 
     this->layout()->addWidget(gameNameLabel);
@@ -30,22 +35,7 @@ void DetailsViewWidget::refresh() {
                                .value(GameSyncServerUtil::defaultName)
                                .toString());
 
-    QJsonDocument pathDoc =
-        GameSyncServerUtil::getInstance().getPathByGameId(gameID);
-    pathList->clear();
-    if (pathDoc.isArray()) {
-        QJsonArray outerArray = pathDoc.array();
-        for (const QJsonValue& objVal : outerArray) {
-            if (!objVal.isObject()) {
-                continue;
-            }
-            QJsonObject obj = objVal.toObject();
-            QString path = obj.value("path").toString();
-            if (!path.isEmpty()) {
-                pathList->addItem(path);
-            }
-        }
-    }
+    pathModel->loadForGame(gameID);
 
     QJsonDocument executableDoc =
         GameSyncServerUtil::getInstance().getExecutableByGameId(gameID);

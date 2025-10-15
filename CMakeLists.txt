@@ -47,6 +47,9 @@ add_executable(${TARGET_NAME}
     include/detailsViewWidget.h
     include/gameSyncServerUtil.h
     include/mainWindow.h
+    include/pathEditableRowWidget.h
+    include/pathItemDelegate.h
+    include/pathListModel.h
     src/addGameDialog.cpp
     src/backgroundSyncWorker.cpp
     src/config.cpp
@@ -54,6 +57,9 @@ add_executable(${TARGET_NAME}
     src/gameSyncServerUtil.cpp
     src/main.cpp
     src/mainWindow.cpp
+    src/pathEditableRowWidget.cpp
+    src/pathItemDelegate.cpp
+    src/pathListModel.cpp
 )
 
 target_compile_definitions(${TARGET_NAME} PRIVATE
