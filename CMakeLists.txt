@@ -45,21 +45,25 @@ add_executable(${TARGET_NAME}
     include/backgroundSyncWorker.h
     include/config.h
     include/detailsViewWidget.h
-    include/gameSyncServerUtil.h
     include/mainWindow.h
     include/pathEditableRowWidget.h
     include/pathItemDelegate.h
     include/pathListModel.h
+    include/status.h
+    include/utilFileSystem.h
+    include/utilGameSyncServer.h
     src/addGameDialog.cpp
     src/backgroundSyncWorker.cpp
     src/config.cpp
     src/detailsViewWidget.cpp
-    src/gameSyncServerUtil.cpp
     src/main.cpp
     src/mainWindow.cpp
     src/pathEditableRowWidget.cpp
     src/pathItemDelegate.cpp
     src/pathListModel.cpp
+    src/status.cpp
+    src/utilFileSystem.cpp
+    src/utilGameSyncServer.cpp
 )
 
 target_compile_definitions(${TARGET_NAME} PRIVATE

@@ -4,7 +4,7 @@
 #include <QMap>
 #include <QUrl>
 
-class GameSyncServerUtil {
+class UtilGameSyncServer {
   public:
     static constexpr QStringView defaultName = u"default_name";
     static constexpr QStringView id = u"id";
@@ -12,8 +12,8 @@ class GameSyncServerUtil {
     static constexpr QStringView linuxOS = u"linux";
     static constexpr QStringView undefined = u"undefined";
 
-    static GameSyncServerUtil& getInstance() {
-        static GameSyncServerUtil instance;
+    static UtilGameSyncServer& getInstance() {
+        static UtilGameSyncServer instance;
         return instance;
     }
     void setServerURL(QUrl url) { this->remoteUrl = url; }
@@ -24,12 +24,12 @@ class GameSyncServerUtil {
     QJsonDocument getPathByGameId(int id, bool forceFetch = false);
     QJsonDocument getExecutableByGameId(int id, bool forceFetch = false);
 
-    GameSyncServerUtil(GameSyncServerUtil const&) = delete;
-    GameSyncServerUtil& operator=(GameSyncServerUtil const&) = delete;
+    UtilGameSyncServer(UtilGameSyncServer const&) = delete;
+    UtilGameSyncServer& operator=(UtilGameSyncServer const&) = delete;
 
   protected:
-    GameSyncServerUtil() = default;
-    ~GameSyncServerUtil() = default;
+    UtilGameSyncServer() = default;
+    ~UtilGameSyncServer() = default;
 
   private:
     QUrl remoteUrl;

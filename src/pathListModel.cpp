@@ -1,6 +1,7 @@
 #include "pathListModel.h"
 #include "config.h"
-#include "gameSyncServerUtil.h"
+#include "status.h"
+#include "utilGameSyncServer.h"
 #include <QBrush>
 #include <QJsonArray>
 #include <QJsonObject>
@@ -11,6 +12,11 @@ int PathListModel::rowCount(const QModelIndex& parent) const {
     if (parent.isValid())
         return 0;
     return pathItems.size(); // NOLINT
+}
+
+bool PathListModel::isPathValid(PathItem item) const {
+    return Status::getInstance().getPathStatusById(item.id).isEmpty() &&
+           !item.configPath.isEmpty();
 }
 
 QVariant PathListModel::data(const QModelIndex& index, int role) const {
@@ -31,12 +37,12 @@ QVariant PathListModel::data(const QModelIndex& index, int role) const {
     case Role::ConfigPathRole:
         return item.configPath;
     case Qt::BackgroundRole:
-        if (item.configPath.isEmpty()) {
+        if (!isPathValid(item)) {
             return QBrush(QColor(255, 0, 0, 40));
         }
         return {};
     case Qt::ForegroundRole:
-        if (item.configPath.isEmpty()) {
+        if (!isPathValid(item)) {
             return QBrush(Qt::gray);
         }
         return {};
@@ -91,7 +97,7 @@ void PathListModel::loadForGame(int gameID) {
     }
 
     QJsonDocument doc =
-        GameSyncServerUtil::getInstance().getPathByGameId(gameID);
+        UtilGameSyncServer::getInstance().getPathByGameId(gameID);
     if (!doc.isArray()) {
         endResetModel();
         return;

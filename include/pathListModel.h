@@ -29,4 +29,6 @@ class PathListModel : public QAbstractListModel {
 
   private:
     QVector<PathItem> pathItems;
+
+    [[nodiscard]] bool isPathValid(PathItem item) const;
 };

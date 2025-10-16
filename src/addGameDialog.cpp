@@ -1,5 +1,5 @@
 #include "addGameDialog.h"
-#include "gameSyncServerUtil.h"
+#include "utilGameSyncServer.h"
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -9,7 +9,7 @@
 #include <tuple>
 
 QJsonDocument getRemoteGameList() {
-    return GameSyncServerUtil::getInstance().getGameMetadataList();
+    return UtilGameSyncServer::getInstance().getGameMetadataList();
 }
 
 void addRemoteGameListToSyncList(QJsonDocument doc, QListWidget* list) {
@@ -20,7 +20,7 @@ void addRemoteGameListToSyncList(QJsonDocument doc, QListWidget* list) {
         QJsonObject object = innerVal.toObject();
 
         QString defaultName =
-            object.value(GameSyncServerUtil::defaultName).toString();
+            object.value(UtilGameSyncServer::defaultName).toString();
         int id = object.value("id").toInt();
 
         defaultNames.push_back({id, defaultName});

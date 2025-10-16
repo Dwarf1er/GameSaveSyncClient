@@ -1,6 +1,8 @@
 #pragma once
 
+#include <QMap>
 #include <QObject>
+#include <QString>
 #include <QTimer>
 
 class BackgroundSyncWorker : public QObject {
@@ -11,8 +13,10 @@ class BackgroundSyncWorker : public QObject {
 
   public slots:
     void start();
+    void update();
 
   signals:
     void syncFinished();
     void errorOccurred(QString);
+    void pathStatusUpdate(QMap<int, QString>);
 };

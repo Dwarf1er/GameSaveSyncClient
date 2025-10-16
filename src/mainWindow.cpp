@@ -2,7 +2,7 @@
 #include "addGameDialog.h"
 #include "config.h"
 #include "detailsViewWidget.h"
-#include "gameSyncServerUtil.h"
+#include "utilGameSyncServer.h"
 #include <QAction>
 #include <QApplication>
 #include <QCloseEvent>
@@ -105,9 +105,9 @@ void MainWindow::refreshFromIDFromConfig() {
 
     for (auto& id : config::returnAllIds()) {
         QJsonObject gameMetadata =
-            GameSyncServerUtil::getInstance().getGameMetadata(id);
+            UtilGameSyncServer::getInstance().getGameMetadata(id);
         QString defaultName =
-            gameMetadata.value(GameSyncServerUtil::defaultName).toString();
+            gameMetadata.value(UtilGameSyncServer::defaultName).toString();
 
         defaultNames.push_back({id, defaultName});
     }

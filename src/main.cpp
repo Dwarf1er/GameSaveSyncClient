@@ -1,6 +1,7 @@
 #include "backgroundSyncWorker.h"
-#include "gameSyncServerUtil.h"
 #include "mainWindow.h"
+#include "status.h"
+#include "utilGameSyncServer.h"
 #include <QApplication>
 #include <QThread>
 
@@ -9,7 +10,7 @@ int main(int argc, char* argv[]) {
     QCoreApplication::setOrganizationName("GameSaveSync");
     QCoreApplication::setApplicationName("GameSaveSyncClient");
 
-    GameSyncServerUtil::getInstance().setServerURL(
+    UtilGameSyncServer::getInstance().setServerURL(
         QUrl("http://localhost:3000"));
 
     app.setQuitOnLastWindowClosed(false);
@@ -21,16 +22,17 @@ int main(int argc, char* argv[]) {
     QObject::connect(workerThread, &QThread::started, worker,
                      &BackgroundSyncWorker::start);
 
-    // Optional: connect worker signals to UI updates
-    auto mw = new MainWindow;
-    QObject::connect(worker, &BackgroundSyncWorker::syncFinished, mw,
+    auto mainWindow = new MainWindow;
+    QObject::connect(worker, &BackgroundSyncWorker::syncFinished, mainWindow,
                      &MainWindow::onSyncFinished);
-    QObject::connect(worker, &BackgroundSyncWorker::errorOccurred, mw,
+    QObject::connect(worker, &BackgroundSyncWorker::errorOccurred, mainWindow,
                      &MainWindow::onErrorOccurred);
+    QObject::connect(worker, &BackgroundSyncWorker::pathStatusUpdate,
+                     &Status::getInstance(), &Status::setPathStatus);
 
     workerThread->start();
 
-    mw->show();
+    mainWindow->show();
 
     int ret = app.exec();
 

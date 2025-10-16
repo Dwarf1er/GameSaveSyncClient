@@ -1,4 +1,4 @@
-#include "gameSyncServerUtil.h"
+#include "utilGameSyncServer.h"
 #include <QDebug>
 #include <QEventLoop>
 #include <QJsonArray>
@@ -8,7 +8,7 @@
 #include <QNetworkReply>
 #include <QNetworkRequest>
 
-QJsonDocument GameSyncServerUtil::fetchRemoteEndpoint(QString endpoint) {
+QJsonDocument UtilGameSyncServer::fetchRemoteEndpoint(QString endpoint) {
     QNetworkAccessManager manager;
     QUrl baseUrl = remoteUrl.adjusted(QUrl::StripTrailingSlash);
     baseUrl.setPath(baseUrl.path() + endpoint);
@@ -38,25 +38,25 @@ QJsonDocument GameSyncServerUtil::fetchRemoteEndpoint(QString endpoint) {
     return doc;
 }
 
-QJsonDocument GameSyncServerUtil::getGameMetadataList(bool forceFetch) {
+QJsonDocument UtilGameSyncServer::getGameMetadataList(bool forceFetch) {
     if (forceFetch || gameMetadataList.isEmpty()) {
         gameMetadataList = fetchRemoteEndpoint("/v1/games");
     }
     return gameMetadataList;
 }
 
-QJsonObject GameSyncServerUtil::getGameMetadata(int gameID) {
+QJsonObject UtilGameSyncServer::getGameMetadata(int gameID) {
     QJsonDocument document = getGameMetadataList();
     for (const QJsonValue& innerVal : document.array()) {
         QJsonObject object = innerVal.toObject();
-        if (gameID == object.value(GameSyncServerUtil::id).toInt()) {
+        if (gameID == object.value(UtilGameSyncServer::id).toInt()) {
             return object;
         }
     }
     return {};
 }
 
-QJsonDocument GameSyncServerUtil::getPathByGameId(int id, bool forceFetch) {
+QJsonDocument UtilGameSyncServer::getPathByGameId(int id, bool forceFetch) {
     if (forceFetch || !this->gamePathMap.contains(id)) {
         QString endpoint = "/v1/games/" + QString::number(id) + "/paths";
         gamePathMap[id] = fetchRemoteEndpoint(endpoint);
@@ -64,7 +64,7 @@ QJsonDocument GameSyncServerUtil::getPathByGameId(int id, bool forceFetch) {
     return gamePathMap.value(id);
 }
 
-QJsonDocument GameSyncServerUtil::getExecutableByGameId(int id,
+QJsonDocument UtilGameSyncServer::getExecutableByGameId(int id,
                                                         bool forceFetch) {
     if (forceFetch || !this->gameExecutableMap.contains(id)) {
         QString endpoint = "/v1/games/" + QString::number(id) + "/executables";

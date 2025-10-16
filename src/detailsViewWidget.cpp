@@ -1,6 +1,6 @@
 #include "detailsViewWidget.h"
-#include "gameSyncServerUtil.h"
 #include "pathItemDelegate.h"
+#include "utilGameSyncServer.h"
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QVBoxLayout>
@@ -30,15 +30,15 @@ void DetailsViewWidget::refresh() {
         return;
     }
 
-    gameNameLabel->setText(GameSyncServerUtil::getInstance()
+    gameNameLabel->setText(UtilGameSyncServer::getInstance()
                                .getGameMetadata(gameID)
-                               .value(GameSyncServerUtil::defaultName)
+                               .value(UtilGameSyncServer::defaultName)
                                .toString());
 
     pathModel->loadForGame(gameID);
 
     QJsonDocument executableDoc =
-        GameSyncServerUtil::getInstance().getExecutableByGameId(gameID);
+        UtilGameSyncServer::getInstance().getExecutableByGameId(gameID);
     executableList->clear();
     if (executableDoc.isArray()) {
         QJsonArray outerArray = executableDoc.array();
