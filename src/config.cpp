@@ -36,22 +36,39 @@ QList<int> returnAllIds() {
     return idList;
 }
 
-inline QString getPathKey(int pathID) {
-    return "Path: " + QString::number(pathID);
-}
+QString getPathKey(int pathID) { return "Path: " + QString::number(pathID); }
+QString getPathStringKey(int pathID) { return getPathKey(pathID) + "/path"; }
+QString getPathUUIDKey(int pathID) { return getPathKey(pathID) + "/last_save"; }
 
 void updatePath(int pathID, QString path) {
     QSettings settings = config::getConfig();
-    settings.setValue(getPathKey(pathID), path);
+    settings.setValue(getPathStringKey(pathID), path);
 }
+
 void removePath(int pathID) {
     QSettings settings = config::getConfig();
-    settings.remove(getPathKey(pathID));
+    settings.remove(getPathStringKey(pathID));
 }
 
 QString getPath(int pathID) {
     QSettings settings = config::getConfig();
-    return settings.value(getPathKey(pathID), QString{}).toString();
+    return settings.value(getPathStringKey(pathID), QString{}).toString();
+}
+
+QString getUUIDForPath(int pathID) {
+    QSettings settings = config::getConfig();
+    return settings.value(getPathUUIDKey(pathID) + "/last_save", QString{})
+        .toString();
+}
+
+void updateUUIDForPath(int pathID, QString uuid) {
+    QSettings settings = config::getConfig();
+    settings.setValue(getPathUUIDKey(pathID) + "/last_save", uuid);
+}
+
+void removeUUIDForPath(int pathID) {
+    QSettings settings = config::getConfig();
+    settings.remove(getPathUUIDKey(pathID));
 }
 
 } // namespace config

@@ -1,8 +1,14 @@
 #pragma once
 
 #include <QString>
-#include <optional>
 
 namespace utilFileSystem {
-std::optional<QString> validatePath(QString path);
+struct FileHash {
+    QString relativePath;
+    QString hash;
 };
+
+bool validatePath(QString path);
+QString getBasePath(QString path);
+std::vector<FileHash> createZip(QString gameId, QString path);
+}; // namespace utilFileSystem

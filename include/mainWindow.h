@@ -38,7 +38,6 @@ class MainWindow : public QMainWindow {
 
   public slots:
     void onErrorOccurred(QString);
-    void onSyncFinished();
     void showWindow();
   private slots:
     void addGameDialogOpen();

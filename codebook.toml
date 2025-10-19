@@ -1,1 +1,4 @@
-words = ["nolint"]
+words = [
+    "gzip",
+    "nolint",
+]

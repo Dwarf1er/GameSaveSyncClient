@@ -23,8 +23,6 @@ int main(int argc, char* argv[]) {
                      &BackgroundSyncWorker::start);
 
     auto mainWindow = new MainWindow;
-    QObject::connect(worker, &BackgroundSyncWorker::syncFinished, mainWindow,
-                     &MainWindow::onSyncFinished);
     QObject::connect(worker, &BackgroundSyncWorker::errorOccurred, mainWindow,
                      &MainWindow::onErrorOccurred);
     QObject::connect(worker, &BackgroundSyncWorker::pathStatusUpdate,

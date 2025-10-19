@@ -1,7 +1,9 @@
 #pragma once
 
+#include "utilFileSystem.h"
 #include <QJsonDocument>
 #include <QMap>
+#include <QNetworkAccessManager>
 #include <QUrl>
 
 class UtilGameSyncServer {
@@ -16,6 +18,7 @@ class UtilGameSyncServer {
         static UtilGameSyncServer instance;
         return instance;
     }
+
     void setServerURL(QUrl url) { this->remoteUrl = url; }
     QUrl getServerURL() { return this->remoteUrl; }
 
@@ -23,6 +26,10 @@ class UtilGameSyncServer {
     QJsonObject getGameMetadata(int id);
     QJsonDocument getPathByGameId(int id, bool forceFetch = false);
     QJsonDocument getExecutableByGameId(int id, bool forceFetch = false);
+    QJsonDocument getSavesForPathId(int id);
+    std::optional<QString>
+    postGameSavesForPathId(int pathId, int gameId,
+                           std::vector<utilFileSystem::FileHash> hashOfContent);
 
     UtilGameSyncServer(UtilGameSyncServer const&) = delete;
     UtilGameSyncServer& operator=(UtilGameSyncServer const&) = delete;

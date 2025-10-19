@@ -136,8 +136,6 @@ void MainWindow::showWindow() {
     this->activateWindow();
 }
 
-void MainWindow::onSyncFinished() { refreshFromIDFromConfig(); }
-
 void MainWindow::onErrorOccurred(QString msg) {
     qWarning() << "Background sync error:" << msg;
 }

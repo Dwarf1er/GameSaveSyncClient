@@ -1,5 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
+include(FetchContent)
+cmake_policy(SET CMP0135 NEW)
+
 set(TARGET_NAME GameSaveSyncClient)
 
 set(QT_MAJOR_VERSION 6)
@@ -16,6 +19,8 @@ set(CMAKE_AUTOUIC_SEARCH_PATHS
 set(CMAKE_CXX_STANDARD 23)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_CLANG_TIDY clang-tidy)
+set(CMAKE_CXX_CLANG_TIDY "clang-tidy;--header-filter=^$" CACHE STRING "" FORCE)
+
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
@@ -97,6 +102,27 @@ set_target_properties(${TARGET_NAME} PROPERTIES
   RUNTIME_OUTPUT_DIRECTORY_RELEASE "${CMAKE_BINARY_DIR}/bin/Release"
 )
 
-#Add any extra libs to link also.
-target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_MAJOR_VERSION}::Widgets)
-target_link_libraries(${TARGET_NAME} PRIVATE Qt${QT_MAJOR_VERSION}::Network)
+FetchContent_Declare(miniz
+    URL
+    https://github.com/richgel999/miniz/releases/download/3.1.0/miniz-3.1.0.zip
+    DOWNLOAD_EXTRACT_TIMESTAMP TRUE
+)
+FetchContent_MakeAvailable(miniz)
+add_library(miniz_static STATIC
+    "${miniz_SOURCE_DIR}/miniz.c"
+)
+target_include_directories(miniz_static
+    PUBLIC SYSTEM "${miniz_SOURCE_DIR}"
+)
+
+if(MSVC)
+    target_compile_options(miniz_static PRIVATE /W0)
+else()
+    target_compile_options(miniz_static PRIVATE -w)
+endif()
+
+target_link_libraries(${TARGET_NAME} PRIVATE miniz_static)
+target_link_libraries(${TARGET_NAME}
+    PRIVATE Qt${QT_MAJOR_VERSION}::Widgets)
+target_link_libraries(${TARGET_NAME}
+    PRIVATE Qt${QT_MAJOR_VERSION}::Network)
