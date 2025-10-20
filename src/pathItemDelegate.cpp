@@ -21,7 +21,7 @@ void PathItemDelegate::setEditorData(QWidget* editor,
     QString value =
         index.model()->data(index, PathListModel::ConfigPathRole).toString();
 
-    auto* lineEdit = editor->findChild<QLineEdit*>();
+    auto lineEdit = editor->findChild<QLineEdit*>();
     if (lineEdit) {
         lineEdit->setText(value);
     }
@@ -29,7 +29,7 @@ void PathItemDelegate::setEditorData(QWidget* editor,
 
 void PathItemDelegate::setModelData(QWidget* editor, QAbstractItemModel* model,
                                     const QModelIndex& index) const {
-    auto* lineEdit = editor->findChild<QLineEdit*>();
+    auto lineEdit = editor->findChild<QLineEdit*>();
     if (lineEdit) {
         model->setData(index, lineEdit->text(), PathListModel::ConfigPathRole);
     }

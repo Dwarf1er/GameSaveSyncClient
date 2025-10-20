@@ -108,7 +108,7 @@ std::optional<QString> UtilGameSyncServer::postGameSavesForPathId(
     QString zipPath = QDir(tempDir).filePath(QString::number(gameId) + ".zip");
     qDebug() << "Zip path:" << zipPath;
 
-    auto* multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
+    auto multiPart = new QHttpMultiPart(QHttpMultiPart::FormDataType);
 
     QHttpPart httpPartHashArray;
     httpPartHashArray.setHeader(QNetworkRequest::ContentDispositionHeader,
@@ -119,7 +119,7 @@ std::optional<QString> UtilGameSyncServer::postGameSavesForPathId(
     QHttpPart httpPartFile;
     httpPartFile.setHeader(QNetworkRequest::ContentDispositionHeader,
                            QVariant("form-data; name=\"file\""));
-    auto* file = new QFile(zipPath);
+    auto file = new QFile(zipPath);
     if (!file->open(QIODevice::ReadOnly)) {
         qWarning() << "Opening file failed";
         return std::nullopt;
