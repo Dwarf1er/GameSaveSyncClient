@@ -1,6 +1,6 @@
 .cache
 working directory/
-__cmake
+__cmake*
 
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------

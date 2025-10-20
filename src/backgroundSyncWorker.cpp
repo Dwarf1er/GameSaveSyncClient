@@ -15,73 +15,66 @@ void BackgroundSyncWorker::start() {
     timer->start();
 }
 
-bool shouldUploadLocalFile(QJsonDocument document) {
-    if (document.isEmpty())
-        return true;
-    // TODO we have other case (comparing remote hash, etc) where we want to
-    // upload a save
-    return false;
+bool shouldUploadLocalFile(const QJsonDocument& document) {
+    // TODO complete it
+    return document.isEmpty();
 }
 
+namespace {
+
+void forEachGamePath(
+    int gameId,
+    std::function<void(int pathId, const QString& configPath)> callback) {
+    auto& server = UtilGameSyncServer::getInstance();
+    QJsonDocument pathDoc = server.getPathByGameId(gameId);
+    if (!pathDoc.isArray())
+        return;
+    for (const QJsonValue& v : pathDoc.array()) {
+        if (!v.isObject())
+            continue;
+        QJsonObject obj = v.toObject();
+        int pathId = obj.value("id").toInt();
+        QString configPath = config::getPath(pathId);
+        callback(pathId, configPath);
+    }
+}
+
+} // namespace
+
 void BackgroundSyncWorker::syncGameSaveToServer() {
-    QList<int> gameIds = config::returnAllIds();
-    for (auto gameId : gameIds) {
-        QJsonDocument pathDocument =
-            UtilGameSyncServer::getInstance().getPathByGameId(gameId);
+    for (int gameId : config::returnAllIds()) {
+        forEachGamePath(
+            gameId, [&](int pathId, const QString& configPath) -> void {
+                if (!utilFileSystem::validatePath(configPath))
+                    return;
 
-        if (pathDocument.isArray()) {
-            const QJsonArray array = pathDocument.array();
-            for (const QJsonValue& val : array) {
-                if (val.isObject()) {
-                    QJsonObject obj = val.toObject();
-                    int pathId = obj.value("id").toInt();
-                    QString configPath = config::getPath(pathId);
-                    if (utilFileSystem::validatePath(configPath)) {
-                        QJsonDocument document =
-                            UtilGameSyncServer::getInstance().getSavesForPathId(
-                                pathId);
+                QJsonDocument doc =
+                    UtilGameSyncServer::getInstance().getSavesForPathId(pathId);
+                if (!shouldUploadLocalFile(doc))
+                    return;
 
-                        if (shouldUploadLocalFile(document)) {
-                            std::vector hashes = utilFileSystem::createZip(
-                                QString::number(gameId), configPath);
-
-                            std::optional<QString> uuid =
-                                UtilGameSyncServer::getInstance()
-                                    .postGameSavesForPathId(pathId, gameId,
-                                                            hashes);
-
-                            if (uuid.has_value()) {
-                                config::updateUUIDForPath(pathId, uuid.value());
-                            }
-                        }
-                    }
+                auto hashes = utilFileSystem::createZip(QString::number(gameId),
+                                                        configPath);
+                if (auto uuid =
+                        UtilGameSyncServer::getInstance()
+                            .postGameSavesForPathId(pathId, gameId, hashes);
+                    uuid.has_value()) {
+                    config::updateUUIDForPath(pathId, uuid.value());
                 }
-            }
-        }
+            });
     }
 }
 
 void BackgroundSyncWorker::validatePaths() {
     QMap<int, QString> pathStatus;
-    QList<int> gameIds = config::returnAllIds();
-    for (auto gameId : gameIds) {
-        QJsonDocument pathDocument =
-            UtilGameSyncServer::getInstance().getPathByGameId(gameId);
-
-        if (pathDocument.isArray()) {
-            const QJsonArray array = pathDocument.array();
-            for (const QJsonValue& val : array) {
-                if (val.isObject()) {
-                    QJsonObject obj = val.toObject();
-                    int pathId = obj.value("id").toInt();
-                    QString configPath = config::getPath(pathId);
-                    if (utilFileSystem::validatePath(configPath))
-                        pathStatus.insert(pathId, {"Invalid Path"});
-                    else
-                        pathStatus.insert(pathId, {});
-                }
-            }
-        }
+    for (int gameId : config::returnAllIds()) {
+        forEachGamePath(gameId,
+                        [&](int pathId, const QString& configPath) -> void {
+                            if (!utilFileSystem::validatePath(configPath))
+                                pathStatus.insert(pathId, {"Invalid Path"});
+                            else
+                                pathStatus.insert(pathId, {});
+                        });
     }
     emit pathStatusUpdate(pathStatus);
 }
