@@ -81,9 +81,40 @@ QJsonDocument UtilGameSyncServer::getExecutableByGameId(int id,
     return gameExecutableMap.value(id);
 }
 
-QJsonDocument UtilGameSyncServer::getSavesForPathId(int id) {
+QVector<UtilGameSyncServer::SaveJson>
+UtilGameSyncServer::getSavesForPathId(int id) {
     QString endpoint = "/v1/paths/" + QString::number(id) + "/saves";
-    return fetchRemoteEndpoint(endpoint);
+    QJsonDocument document = fetchRemoteEndpoint(endpoint);
+
+    QVector<UtilGameSyncServer::SaveJson> savesJson;
+
+    if (document.isArray()) {
+        for (auto element : document.array()) {
+            if (element.isObject()) {
+                QJsonObject object = element.toObject();
+                QVector<UtilGameSyncServer::SaveHash> savesHash;
+
+                QJsonValue filesHash = object.value("files_hash");
+                if (object.value("files_hash").isArray()) {
+                    for (auto fileHash : filesHash.toArray()) {
+                        QJsonObject fileHashObject = fileHash.toObject();
+                        savesHash.append(
+                            {.hash = fileHashObject.value("hash").toString(),
+                             .relativePath =
+                                 fileHashObject.value("relative_path")
+                                     .toString()});
+                    }
+                }
+
+                savesJson.append({.savesHash = savesHash,
+                                  .pathId = object.value("path_id").toInt(),
+                                  .unixTime = object.value("time").toInteger(),
+                                  .uuid = object.value("uuid").toString()});
+            }
+        }
+    }
+
+    return savesJson;
 }
 
 std::optional<QString> UtilGameSyncServer::postGameSavesForPathId(

@@ -8,6 +8,18 @@
 
 class UtilGameSyncServer {
   public:
+    struct SaveHash {
+        QString hash;
+        QString relativePath;
+    };
+
+    struct SaveJson {
+        QVector<SaveHash> savesHash;
+        int pathId;
+        qint64 unixTime;
+        QString uuid;
+    };
+
     static constexpr QStringView defaultName = u"default_name";
     static constexpr QStringView id = u"id";
     static constexpr QStringView windowsOS = u"windows";
@@ -26,7 +38,7 @@ class UtilGameSyncServer {
     QJsonObject getGameMetadata(int id);
     QJsonDocument getPathByGameId(int id, bool forceFetch = false);
     QJsonDocument getExecutableByGameId(int id, bool forceFetch = false);
-    QJsonDocument getSavesForPathId(int id);
+    QVector<SaveJson> getSavesForPathId(int id);
     std::optional<QString>
     postGameSavesForPathId(int pathId, int gameId,
                            std::vector<utilFileSystem::FileHash> hashOfContent);

@@ -6,6 +6,7 @@
 #include <QJsonObject>
 
 constexpr int timerInterval = 30 * 1000;
+constexpr qint64 savesMinimumInterval = static_cast<qint64>(5 * 60);
 
 void BackgroundSyncWorker::start() {
     auto timer = new QTimer(this);
@@ -15,9 +16,31 @@ void BackgroundSyncWorker::start() {
     timer->start();
 }
 
-bool shouldUploadLocalFile(const QJsonDocument& document) {
-    // TODO complete it
-    return document.isEmpty();
+bool shouldUploadLocalFile(int pathId) {
+    QVector<UtilGameSyncServer::SaveJson> savesJson =
+        UtilGameSyncServer::getInstance().getSavesForPathId(pathId);
+    if (savesJson.isEmpty())
+        return true;
+
+    std::ranges::sort(savesJson,
+                      [](const UtilGameSyncServer::SaveJson& value1,
+                         const UtilGameSyncServer::SaveJson& value2) -> int {
+                          return value1.unixTime < value2.unixTime;
+                      });
+
+    UtilGameSyncServer::SaveJson lastSave = savesJson.last();
+    // If I was not the one to have created the last save. I don't want to
+    // continue. Need to be changed for a real conflict gui/manager at one point
+    if (lastSave.uuid != config::getUUIDForPath(pathId)) {
+        return false;
+    }
+
+    if ((QDateTime::currentSecsSinceEpoch() - lastSave.unixTime) <
+        savesMinimumInterval) {
+        return false;
+    }
+
+    return true;
 }
 
 namespace {
@@ -29,10 +52,10 @@ void forEachGamePath(
     QJsonDocument pathDoc = server.getPathByGameId(gameId);
     if (!pathDoc.isArray())
         return;
-    for (const QJsonValue& v : pathDoc.array()) {
-        if (!v.isObject())
+    for (const QJsonValue& value : pathDoc.array()) {
+        if (!value.isObject())
             continue;
-        QJsonObject obj = v.toObject();
+        QJsonObject obj = value.toObject();
         int pathId = obj.value("id").toInt();
         QString configPath = config::getPath(pathId);
         callback(pathId, configPath);
@@ -48,9 +71,7 @@ void BackgroundSyncWorker::syncGameSaveToServer() {
                 if (!utilFileSystem::validatePath(configPath))
                     return;
 
-                QJsonDocument doc =
-                    UtilGameSyncServer::getInstance().getSavesForPathId(pathId);
-                if (!shouldUploadLocalFile(doc))
+                if (!shouldUploadLocalFile(pathId))
                     return;
 
                 auto hashes = utilFileSystem::createZip(QString::number(gameId),
