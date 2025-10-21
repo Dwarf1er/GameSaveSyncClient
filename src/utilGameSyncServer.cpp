@@ -72,11 +72,26 @@ QJsonDocument UtilGameSyncServer::getPathByGameId(int id, bool forceFetch) {
     return gamePathMap.value(id);
 }
 
-QJsonDocument UtilGameSyncServer::getExecutableByGameId(int id,
-                                                        bool forceFetch) {
+QVector<UtilGameSyncServer::ExecutableJson>
+UtilGameSyncServer::getExecutableByGameId(int id, bool forceFetch) {
     if (forceFetch || !this->gameExecutableMap.contains(id)) {
         QString endpoint = "/v1/games/" + QString::number(id) + "/executables";
-        gameExecutableMap[id] = fetchRemoteEndpoint(endpoint);
+        QJsonDocument document = fetchRemoteEndpoint(endpoint);
+        if (document.isArray()) {
+            QJsonArray outerArray = document.array();
+            QVector<UtilGameSyncServer::ExecutableJson> executablesJson;
+            for (const QJsonValue& objVal : outerArray) {
+                if (!objVal.isObject()) {
+                    continue;
+                }
+                QJsonObject obj = objVal.toObject();
+                QString executable = obj.value("executable").toString();
+                if (!executable.isEmpty()) {
+                    executablesJson.append({.executablePath = executable});
+                }
+            }
+            gameExecutableMap[id] = executablesJson;
+        }
     }
     return gameExecutableMap.value(id);
 }

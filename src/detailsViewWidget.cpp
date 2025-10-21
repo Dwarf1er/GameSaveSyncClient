@@ -37,20 +37,10 @@ void DetailsViewWidget::refresh() {
 
     pathModel->loadForGame(gameID);
 
-    QJsonDocument executableDoc =
+    QVector<UtilGameSyncServer::ExecutableJson> executablesJson =
         UtilGameSyncServer::getInstance().getExecutableByGameId(gameID);
     executableList->clear();
-    if (executableDoc.isArray()) {
-        QJsonArray outerArray = executableDoc.array();
-        for (const QJsonValue& objVal : outerArray) {
-            if (!objVal.isObject()) {
-                continue;
-            }
-            QJsonObject obj = objVal.toObject();
-            QString executable = obj.value("executable").toString();
-            if (!executable.isEmpty()) {
-                executableList->addItem(executable);
-            }
-        }
+    for (auto executableJson : executablesJson) {
+        executableList->addItem(executableJson.executablePath);
     }
 }
