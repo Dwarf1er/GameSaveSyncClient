@@ -3,8 +3,6 @@
 #include "status.h"
 #include "utilGameSyncServer.h"
 #include <QBrush>
-#include <QJsonArray>
-#include <QJsonObject>
 
 PathListModel::PathListModel(QObject* parent) : QAbstractListModel(parent) {}
 
@@ -96,21 +94,19 @@ void PathListModel::loadForGame(int gameID) {
         return;
     }
 
-    QJsonDocument doc =
+    std::optional<QVector<UtilGameSyncServer::GamePath>> maybePaths =
         UtilGameSyncServer::getInstance().getPathByGameId(gameID);
-    if (!doc.isArray()) {
+    if (!maybePaths.has_value()) {
         endResetModel();
         return;
     }
 
-    const QJsonArray arr = doc.array();
-    for (const QJsonValue& val : arr) {
-        if (!val.isObject())
-            continue;
-        QJsonObject obj = val.toObject();
+    QVector<UtilGameSyncServer::GamePath> paths = maybePaths.value();
+
+    for (const UtilGameSyncServer::GamePath& path : paths) {
         PathItem item;
-        item.id = obj.value("id").toInt();
-        item.dbPath = obj.value("path").toString();
+        item.id = path.id;
+        item.dbPath = path.path;
         item.configPath = config::getPath(item.id);
         pathItems.append(item);
     }

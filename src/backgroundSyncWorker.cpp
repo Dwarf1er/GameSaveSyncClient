@@ -2,8 +2,6 @@
 #include "config.h"
 #include "utilFileSystem.h"
 #include "utilGameSyncServer.h"
-#include <QJsonArray>
-#include <QJsonObject>
 
 constexpr int timerInterval = 30 * 1000;
 constexpr qint64 savesMinimumInterval = static_cast<qint64>(5 * 60);
@@ -49,14 +47,11 @@ void forEachGamePath(
     int gameId,
     std::function<void(int pathId, const QString& configPath)> callback) {
     auto& server = UtilGameSyncServer::getInstance();
-    QJsonDocument pathDoc = server.getPathByGameId(gameId);
-    if (!pathDoc.isArray())
+    auto maybePaths = server.getPathByGameId(gameId);
+    if (!maybePaths.has_value())
         return;
-    for (const QJsonValue& value : pathDoc.array()) {
-        if (!value.isObject())
-            continue;
-        QJsonObject obj = value.toObject();
-        int pathId = obj.value("id").toInt();
+    for (const UtilGameSyncServer::GamePath& path : maybePaths.value()) {
+        int pathId = path.id;
         QString configPath = config::getPath(pathId);
         callback(pathId, configPath);
     }

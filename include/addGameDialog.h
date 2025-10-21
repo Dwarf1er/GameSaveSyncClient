@@ -15,7 +15,6 @@ class AddGameDialog : public QDialog {
 
   private:
     QListWidget* syncList;
-    QJsonDocument remoteGameList;
     QPushButton* cancelButton;
     QPushButton* addButton;
 };

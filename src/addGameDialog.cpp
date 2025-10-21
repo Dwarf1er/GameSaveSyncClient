@@ -1,47 +1,31 @@
 #include "addGameDialog.h"
 #include "utilGameSyncServer.h"
-#include <QJsonArray>
-#include <QJsonDocument>
-#include <QJsonObject>
 #include <QPushButton>
 #include <QVBoxLayout>
 #include <algorithm>
-#include <tuple>
 
-QJsonDocument getRemoteGameList() {
-    return UtilGameSyncServer::getInstance().getGameMetadataList();
-}
+void addRemoteGameListToSyncList(
+    QVector<UtilGameSyncServer::GameMetadata> gamesMetadata,
+    QListWidget* list) {
 
-void addRemoteGameListToSyncList(QJsonDocument doc, QListWidget* list) {
-    QJsonArray outerArray = doc.array();
-    QList<std::tuple<int, QString>> defaultNames;
+    std::ranges::sort(
+        gamesMetadata,
+        [](const UtilGameSyncServer::GameMetadata& value1,
+           const UtilGameSyncServer::GameMetadata& value2) -> int {
+            return QString::compare(value1.defaultName, value2.defaultName,
+                                    Qt::CaseInsensitive) < 0;
+        });
 
-    for (const QJsonValue& innerVal : outerArray) {
-        QJsonObject object = innerVal.toObject();
-
-        QString defaultName =
-            object.value(UtilGameSyncServer::defaultName).toString();
-        int id = object.value("id").toInt();
-
-        defaultNames.push_back({id, defaultName});
-    }
-
-    std::ranges::sort(defaultNames,
-                      [](const auto& value1, const auto& value2) -> int {
-                          return QString::compare(std::get<QString>(value1),
-                                                  std::get<QString>(value2),
-                                                  Qt::CaseInsensitive) < 0;
-                      });
-
-    for (const auto& value : defaultNames) {
-        auto item = new QListWidgetItem(std::get<QString>(value), list);
-        item->setData(Qt::UserRole, std::get<int>(value));
+    for (const UtilGameSyncServer::GameMetadata& gameMetadata : gamesMetadata) {
+        auto item = new QListWidgetItem(gameMetadata.defaultName, list);
+        item->setData(Qt::UserRole, gameMetadata.id);
         list->addItem(item);
     }
 }
 
 AddGameDialog::AddGameDialog(QWidget* parent) : QDialog(parent) {
-    remoteGameList = getRemoteGameList();
+    QVector<UtilGameSyncServer::GameMetadata> remoteGameList =
+        UtilGameSyncServer::getInstance().getGameMetadataList();
     setMinimumSize({500, 200});
 
     syncList = new QListWidget(this);

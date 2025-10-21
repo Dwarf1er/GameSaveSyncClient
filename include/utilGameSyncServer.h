@@ -8,6 +8,19 @@
 
 class UtilGameSyncServer {
   public:
+    struct GameMetadata {
+        int id;
+        QString defaultName;
+        QString steamAppId;
+        QVector<QString> knownNames;
+    };
+
+    struct GamePath {
+        int id;
+        QString operatingSystem;
+        QString path;
+    };
+
     struct SaveHash {
         QString hash;
         QString relativePath;
@@ -24,8 +37,6 @@ class UtilGameSyncServer {
         QString executablePath;
     };
 
-    static constexpr QStringView defaultName = u"default_name";
-    static constexpr QStringView id = u"id";
     static constexpr QStringView windowsOS = u"windows";
     static constexpr QStringView linuxOS = u"linux";
     static constexpr QStringView undefined = u"undefined";
@@ -38,9 +49,10 @@ class UtilGameSyncServer {
     void setServerURL(QUrl url) { this->remoteUrl = url; }
     QUrl getServerURL() { return this->remoteUrl; }
 
-    QJsonDocument getGameMetadataList(bool forceFetch = false);
-    QJsonObject getGameMetadata(int id);
-    QJsonDocument getPathByGameId(int id, bool forceFetch = false);
+    QVector<GameMetadata> getGameMetadataList(bool forceFetch = false);
+    std::optional<UtilGameSyncServer::GameMetadata> getGameMetadata(int id);
+    std::optional<QVector<UtilGameSyncServer::GamePath>>
+    getPathByGameId(int gameId, bool forceFetch = false);
     QVector<ExecutableJson> getExecutableByGameId(int id,
                                                   bool forceFetch = false);
     QVector<SaveJson> getSavesForPathId(int id);
@@ -57,8 +69,8 @@ class UtilGameSyncServer {
 
   private:
     QUrl remoteUrl;
-    QJsonDocument gameMetadataList;
-    QMap<int, QJsonDocument> gamePathMap;
+    QVector<GameMetadata> gameMetadataList;
+    QMap<int, QVector<GamePath>> gamePathMap;
     QMap<int, QVector<ExecutableJson>> gameExecutableMap;
 
     QJsonDocument fetchRemoteEndpoint(QString endpoint);

@@ -7,7 +7,6 @@
 #include <QApplication>
 #include <QCloseEvent>
 #include <QIcon>
-#include <QJsonObject>
 #include <QKeySequence>
 #include <QListWidget>
 #include <QMenu>
@@ -101,27 +100,27 @@ void MainWindow::removeGameFromSync() {
 
 void MainWindow::refreshFromIDFromConfig() {
     syncList->clear();
-    QList<std::tuple<int, QString>> defaultNames;
 
+    QVector<UtilGameSyncServer::GameMetadata> gamesMetadata;
     for (auto& id : config::returnAllIds()) {
-        QJsonObject gameMetadata =
+        auto gameMetadata =
             UtilGameSyncServer::getInstance().getGameMetadata(id);
-        QString defaultName =
-            gameMetadata.value(UtilGameSyncServer::defaultName).toString();
 
-        defaultNames.push_back({id, defaultName});
+        if (gameMetadata.has_value())
+            gamesMetadata.append(gameMetadata.value());
     }
 
-    std::ranges::sort(defaultNames,
-                      [](const auto& value1, const auto& value2) -> int {
-                          return QString::compare(std::get<QString>(value1),
-                                                  std::get<QString>(value2),
-                                                  Qt::CaseInsensitive) < 0;
-                      });
+    std::ranges::sort(
+        gamesMetadata,
+        [](const UtilGameSyncServer::GameMetadata& value1,
+           const UtilGameSyncServer::GameMetadata& value2) -> int {
+            return QString::compare(value1.defaultName, value2.defaultName,
+                                    Qt::CaseInsensitive) < 0;
+        });
 
-    for (const auto& value : defaultNames) {
-        auto item = new QListWidgetItem(std::get<QString>(value), syncList);
-        item->setData(Qt::UserRole, std::get<int>(value));
+    for (const UtilGameSyncServer::GameMetadata& gameMetadata : gamesMetadata) {
+        auto item = new QListWidgetItem(gameMetadata.defaultName, syncList);
+        item->setData(Qt::UserRole, gameMetadata.id);
         syncList->addItem(item);
     }
 

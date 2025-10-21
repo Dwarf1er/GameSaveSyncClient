@@ -1,8 +1,6 @@
 #include "detailsViewWidget.h"
 #include "pathItemDelegate.h"
 #include "utilGameSyncServer.h"
-#include <QJsonArray>
-#include <QJsonObject>
 #include <QVBoxLayout>
 
 DetailsViewWidget::DetailsViewWidget(QWidget* parent) : QWidget(parent) {
@@ -30,10 +28,10 @@ void DetailsViewWidget::refresh() {
         return;
     }
 
-    gameNameLabel->setText(UtilGameSyncServer::getInstance()
-                               .getGameMetadata(gameID)
-                               .value(UtilGameSyncServer::defaultName)
-                               .toString());
+    std::optional<UtilGameSyncServer::GameMetadata> maybeMetadata =
+        UtilGameSyncServer::getInstance().getGameMetadata(gameID);
+    QString gameName = maybeMetadata ? maybeMetadata->defaultName : QString{};
+    gameNameLabel->setText(gameName);
 
     pathModel->loadForGame(gameID);
 

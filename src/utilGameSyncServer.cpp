@@ -46,30 +46,70 @@ QJsonDocument UtilGameSyncServer::fetchRemoteEndpoint(QString endpoint) {
     return doc;
 }
 
-QJsonDocument UtilGameSyncServer::getGameMetadataList(bool forceFetch) {
+QVector<UtilGameSyncServer::GameMetadata>
+UtilGameSyncServer::getGameMetadataList(bool forceFetch) {
     if (forceFetch || gameMetadataList.isEmpty()) {
-        gameMetadataList = fetchRemoteEndpoint("/v1/games");
+        QJsonDocument document = fetchRemoteEndpoint("/v1/games");
+        QVector<UtilGameSyncServer::GameMetadata> gamesMetadata;
+
+        QJsonArray outerArray = document.array();
+        for (const QJsonValue& innerVal : outerArray) {
+            QJsonObject object = innerVal.toObject();
+
+            QString defaultName = object.value("default_name").toString();
+            int id = object.value("id").toInt();
+            QString steamAppId = object.value("steam_appid").toString();
+
+            QVector<QString> knowNames;
+            for (auto knowName : object.value("known_name").toArray()) {
+                knowNames.append(knowName.toString());
+            }
+
+            gamesMetadata.push_back({.id = id,
+                                     .defaultName = defaultName,
+                                     .steamAppId = steamAppId,
+                                     .knownNames = knowNames});
+        }
+        gameMetadataList = gamesMetadata;
     }
     return gameMetadataList;
 }
 
-QJsonObject UtilGameSyncServer::getGameMetadata(int gameID) {
-    QJsonDocument document = getGameMetadataList();
-    for (const QJsonValue& innerVal : document.array()) {
-        QJsonObject object = innerVal.toObject();
-        if (gameID == object.value(UtilGameSyncServer::id).toInt()) {
-            return object;
+std::optional<UtilGameSyncServer::GameMetadata>
+UtilGameSyncServer::getGameMetadata(int gameID) {
+    QVector<UtilGameSyncServer::GameMetadata> gameMetadataList =
+        getGameMetadataList();
+    for (const UtilGameSyncServer::GameMetadata& gameMetadata :
+         gameMetadataList) {
+        if (gameID == gameMetadata.id) {
+            return gameMetadata;
         }
     }
-    return {};
+    return std::nullopt;
 }
 
-QJsonDocument UtilGameSyncServer::getPathByGameId(int id, bool forceFetch) {
-    if (forceFetch || !this->gamePathMap.contains(id)) {
-        QString endpoint = "/v1/games/" + QString::number(id) + "/paths";
-        gamePathMap[id] = fetchRemoteEndpoint(endpoint);
+std::optional<QVector<UtilGameSyncServer::GamePath>>
+UtilGameSyncServer::getPathByGameId(int gameId, bool forceFetch) {
+    if (forceFetch || !this->gamePathMap.contains(gameId)) {
+        QString endpoint = "/v1/games/" + QString::number(gameId) + "/paths";
+        QJsonDocument document = fetchRemoteEndpoint(endpoint);
+
+        if (!document.isArray())
+            return std::nullopt;
+        QVector<UtilGameSyncServer::GamePath> gamesPath;
+        for (const QJsonValue& value : document.array()) {
+            QJsonObject obj = value.toObject();
+            int pathId = obj.value("id").toInt();
+            QString path = obj.value("path").toString();
+            QString operatingSystem = obj.value("operating_system").toString();
+
+            gamesPath.append({.id = pathId,
+                              .operatingSystem = operatingSystem,
+                              .path = path});
+        }
+        gamePathMap[gameId] = gamesPath;
     }
-    return gamePathMap.value(id);
+    return gamePathMap.value(gameId);
 }
 
 QVector<UtilGameSyncServer::ExecutableJson>
