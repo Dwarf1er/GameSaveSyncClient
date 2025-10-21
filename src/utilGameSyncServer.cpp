@@ -46,11 +46,11 @@ QJsonDocument UtilGameSyncServer::fetchRemoteEndpoint(QString endpoint) {
     return doc;
 }
 
-QVector<UtilGameSyncServer::GameMetadata>
+QList<UtilGameSyncServer::GameMetadata>
 UtilGameSyncServer::getGameMetadataList(bool forceFetch) {
     if (forceFetch || gameMetadataList.isEmpty()) {
         QJsonDocument document = fetchRemoteEndpoint("/v1/games");
-        QVector<UtilGameSyncServer::GameMetadata> gamesMetadata;
+        QList<UtilGameSyncServer::GameMetadata> gamesMetadata;
 
         QJsonArray outerArray = document.array();
         for (const QJsonValue& innerVal : outerArray) {
@@ -60,7 +60,7 @@ UtilGameSyncServer::getGameMetadataList(bool forceFetch) {
             int id = object.value("id").toInt();
             QString steamAppId = object.value("steam_appid").toString();
 
-            QVector<QString> knowNames;
+            QList<QString> knowNames;
             for (auto knowName : object.value("known_name").toArray()) {
                 knowNames.append(knowName.toString());
             }
@@ -77,7 +77,7 @@ UtilGameSyncServer::getGameMetadataList(bool forceFetch) {
 
 std::optional<UtilGameSyncServer::GameMetadata>
 UtilGameSyncServer::getGameMetadata(int gameID) {
-    QVector<UtilGameSyncServer::GameMetadata> gameMetadataList =
+    QList<UtilGameSyncServer::GameMetadata> gameMetadataList =
         getGameMetadataList();
     for (const UtilGameSyncServer::GameMetadata& gameMetadata :
          gameMetadataList) {
@@ -88,7 +88,7 @@ UtilGameSyncServer::getGameMetadata(int gameID) {
     return std::nullopt;
 }
 
-std::optional<QVector<UtilGameSyncServer::GamePath>>
+std::optional<QList<UtilGameSyncServer::GamePath>>
 UtilGameSyncServer::getPathByGameId(int gameId, bool forceFetch) {
     if (forceFetch || !this->gamePathMap.contains(gameId)) {
         QString endpoint = "/v1/games/" + QString::number(gameId) + "/paths";
@@ -96,7 +96,7 @@ UtilGameSyncServer::getPathByGameId(int gameId, bool forceFetch) {
 
         if (!document.isArray())
             return std::nullopt;
-        QVector<UtilGameSyncServer::GamePath> gamesPath;
+        QList<UtilGameSyncServer::GamePath> gamesPath;
         for (const QJsonValue& value : document.array()) {
             QJsonObject obj = value.toObject();
             int pathId = obj.value("id").toInt();
@@ -112,14 +112,14 @@ UtilGameSyncServer::getPathByGameId(int gameId, bool forceFetch) {
     return gamePathMap.value(gameId);
 }
 
-QVector<UtilGameSyncServer::ExecutableJson>
+QList<UtilGameSyncServer::ExecutableJson>
 UtilGameSyncServer::getExecutableByGameId(int id, bool forceFetch) {
     if (forceFetch || !this->gameExecutableMap.contains(id)) {
         QString endpoint = "/v1/games/" + QString::number(id) + "/executables";
         QJsonDocument document = fetchRemoteEndpoint(endpoint);
         if (document.isArray()) {
             QJsonArray outerArray = document.array();
-            QVector<UtilGameSyncServer::ExecutableJson> executablesJson;
+            QList<UtilGameSyncServer::ExecutableJson> executablesJson;
             for (const QJsonValue& objVal : outerArray) {
                 if (!objVal.isObject()) {
                     continue;
@@ -136,18 +136,18 @@ UtilGameSyncServer::getExecutableByGameId(int id, bool forceFetch) {
     return gameExecutableMap.value(id);
 }
 
-QVector<UtilGameSyncServer::SaveJson>
+QList<UtilGameSyncServer::SaveJson>
 UtilGameSyncServer::getSavesForPathId(int id) {
     QString endpoint = "/v1/paths/" + QString::number(id) + "/saves";
     QJsonDocument document = fetchRemoteEndpoint(endpoint);
 
-    QVector<UtilGameSyncServer::SaveJson> savesJson;
+    QList<UtilGameSyncServer::SaveJson> savesJson;
 
     if (document.isArray()) {
         for (auto element : document.array()) {
             if (element.isObject()) {
                 QJsonObject object = element.toObject();
-                QVector<UtilGameSyncServer::SaveHash> savesHash;
+                QList<UtilGameSyncServer::SaveHash> savesHash;
 
                 QJsonValue filesHash = object.value("files_hash");
                 if (object.value("files_hash").isArray()) {

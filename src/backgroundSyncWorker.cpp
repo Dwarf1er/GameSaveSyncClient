@@ -15,7 +15,7 @@ void BackgroundSyncWorker::start() {
 }
 
 bool shouldUploadLocalFile(int pathId) {
-    QVector<UtilGameSyncServer::SaveJson> savesJson =
+    QList<UtilGameSyncServer::SaveJson> savesJson =
         UtilGameSyncServer::getInstance().getSavesForPathId(pathId);
     if (savesJson.isEmpty())
         return true;

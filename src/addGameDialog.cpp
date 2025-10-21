@@ -5,8 +5,7 @@
 #include <algorithm>
 
 void addRemoteGameListToSyncList(
-    QVector<UtilGameSyncServer::GameMetadata> gamesMetadata,
-    QListWidget* list) {
+    QList<UtilGameSyncServer::GameMetadata> gamesMetadata, QListWidget* list) {
 
     std::ranges::sort(
         gamesMetadata,
@@ -24,7 +23,7 @@ void addRemoteGameListToSyncList(
 }
 
 AddGameDialog::AddGameDialog(QWidget* parent) : QDialog(parent) {
-    QVector<UtilGameSyncServer::GameMetadata> remoteGameList =
+    QList<UtilGameSyncServer::GameMetadata> remoteGameList =
         UtilGameSyncServer::getInstance().getGameMetadataList();
     setMinimumSize({500, 200});
 

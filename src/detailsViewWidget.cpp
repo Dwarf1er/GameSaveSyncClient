@@ -35,7 +35,7 @@ void DetailsViewWidget::refresh() {
 
     pathModel->loadForGame(gameID);
 
-    QVector<UtilGameSyncServer::ExecutableJson> executablesJson =
+    QList<UtilGameSyncServer::ExecutableJson> executablesJson =
         UtilGameSyncServer::getInstance().getExecutableByGameId(gameID);
     executableList->clear();
     for (auto executableJson : executablesJson) {

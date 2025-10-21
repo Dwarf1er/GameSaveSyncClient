@@ -1,8 +1,8 @@
 #pragma once
 
 #include <QAbstractListModel>
+#include <QList>
 #include <QString>
-#include <QVector>
 
 struct PathItem {
     int id{0};
@@ -24,11 +24,11 @@ class PathListModel : public QAbstractListModel {
     bool setData(const QModelIndex& index, const QVariant& value,
                  int role) override;
     [[nodiscard]] Qt::ItemFlags flags(const QModelIndex& index) const override;
-    [[nodiscard]] const QVector<PathItem>& items() const { return pathItems; }
+    [[nodiscard]] const QList<PathItem>& items() const { return pathItems; }
     void loadForGame(int gameId);
 
   private:
-    QVector<PathItem> pathItems;
+    QList<PathItem> pathItems;
 
     [[nodiscard]] bool isPathValid(PathItem item) const;
 };

@@ -101,7 +101,7 @@ void MainWindow::removeGameFromSync() {
 void MainWindow::refreshFromIDFromConfig() {
     syncList->clear();
 
-    QVector<UtilGameSyncServer::GameMetadata> gamesMetadata;
+    QList<UtilGameSyncServer::GameMetadata> gamesMetadata;
     for (auto& id : config::returnAllIds()) {
         auto gameMetadata =
             UtilGameSyncServer::getInstance().getGameMetadata(id);

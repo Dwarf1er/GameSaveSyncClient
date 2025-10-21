@@ -94,14 +94,14 @@ void PathListModel::loadForGame(int gameID) {
         return;
     }
 
-    std::optional<QVector<UtilGameSyncServer::GamePath>> maybePaths =
+    std::optional<QList<UtilGameSyncServer::GamePath>> maybePaths =
         UtilGameSyncServer::getInstance().getPathByGameId(gameID);
     if (!maybePaths.has_value()) {
         endResetModel();
         return;
     }
 
-    QVector<UtilGameSyncServer::GamePath> paths = maybePaths.value();
+    QList<UtilGameSyncServer::GamePath> paths = maybePaths.value();
 
     for (const UtilGameSyncServer::GamePath& path : paths) {
         PathItem item;
