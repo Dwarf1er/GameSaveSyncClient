@@ -116,9 +116,10 @@ UtilGameSyncServer::getPathByGameId(int gameId, bool forceFetch) {
 }
 
 QList<UtilGameSyncServer::ExecutableJson>
-UtilGameSyncServer::getExecutableByGameId(int id, bool forceFetch) {
-    if (forceFetch || !this->gameExecutableMap.contains(id)) {
-        QString endpoint = "/v1/games/" + QString::number(id) + "/executables";
+UtilGameSyncServer::getExecutableByGameId(int gameId, bool forceFetch) {
+    if (forceFetch || !this->gameExecutableMap.contains(gameId)) {
+        QString endpoint =
+            "/v1/games/" + QString::number(gameId) + "/executables";
         QJsonDocument document = fetchRemoteEndpoint(endpoint);
         if (document.isArray()) {
             QJsonArray outerArray = document.array();
@@ -128,7 +129,7 @@ UtilGameSyncServer::getExecutableByGameId(int id, bool forceFetch) {
                     continue;
                 }
                 QJsonObject obj = objVal.toObject();
-                int id = obj.value("id").toInt();
+                int executableId = obj.value("id").toInt();
                 QString executable = obj.value("executable").toString();
                 QString operatingSystem =
                     obj.value("operating_system").toString();
@@ -138,15 +139,15 @@ UtilGameSyncServer::getExecutableByGameId(int id, bool forceFetch) {
 
                 if (!executable.isEmpty()) {
                     executablesJson.append(
-                        {.id = id,
+                        {.id = executableId,
                          .executablePath = executable,
                          .operatingSystem = operatingSystem});
                 }
             }
-            gameExecutableMap[id] = executablesJson;
+            gameExecutableMap[gameId] = executablesJson;
         }
     }
-    return gameExecutableMap.value(id);
+    return gameExecutableMap.value(gameId);
 }
 
 QList<UtilGameSyncServer::SaveJson>
