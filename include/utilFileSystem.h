@@ -7,11 +7,11 @@ struct FileHash {
     QString relativePath;
     QString hash;
 
-    constexpr bool operator==(const FileHash& other) const noexcept {
+    bool operator==(const FileHash& other) const noexcept {
         return relativePath == other.relativePath && hash == other.hash;
     }
 
-    constexpr bool operator!=(const FileHash& other) const noexcept {
+    bool operator!=(const FileHash& other) const noexcept {
         return !(*this == other);
     }
 };

@@ -34,12 +34,21 @@ class UtilGameSyncServer {
     };
 
     struct ExecutableJson {
+        int id;
         QString executablePath;
+        QString operatingSystem;
     };
 
     static constexpr QStringView windowsOS = u"windows";
     static constexpr QStringView linuxOS = u"linux";
     static constexpr QStringView undefined = u"undefined";
+
+    // Normally one per OS, but on Linux we take the Windows one too
+#if defined(Q_OS_WIN)
+    QList<QString> listOfAcceptableOs = {QString(windowsOS)};
+#elif defined(Q_OS_LINUX)
+    QList<QString> listOfAcceptableOs = {QString(windowsOS), QString(linuxOS)};
+#endif
 
     static UtilGameSyncServer& getInstance() {
         static UtilGameSyncServer instance;

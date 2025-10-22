@@ -103,6 +103,9 @@ UtilGameSyncServer::getPathByGameId(int gameId, bool forceFetch) {
             QString path = obj.value("path").toString();
             QString operatingSystem = obj.value("operating_system").toString();
 
+            if (!listOfAcceptableOs.contains(operatingSystem))
+                continue;
+
             gamesPath.append({.id = pathId,
                               .operatingSystem = operatingSystem,
                               .path = path});
@@ -125,9 +128,19 @@ UtilGameSyncServer::getExecutableByGameId(int id, bool forceFetch) {
                     continue;
                 }
                 QJsonObject obj = objVal.toObject();
+                int id = obj.value("id").toInt();
                 QString executable = obj.value("executable").toString();
+                QString operatingSystem =
+                    obj.value("operating_system").toString();
+
+                if (!listOfAcceptableOs.contains(operatingSystem))
+                    continue;
+
                 if (!executable.isEmpty()) {
-                    executablesJson.append({.executablePath = executable});
+                    executablesJson.append(
+                        {.id = id,
+                         .executablePath = executable,
+                         .operatingSystem = operatingSystem});
                 }
             }
             gameExecutableMap[id] = executablesJson;
