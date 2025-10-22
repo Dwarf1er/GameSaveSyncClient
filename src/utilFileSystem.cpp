@@ -66,14 +66,31 @@ QString getBasePath(QString path) {
     return basePath;
 }
 
-std::vector<FileHash> createZip(QString gameId, QString path) { // NOLINT
-    QString basePath = getBasePath(path);
-    QString pattern = path;
-    pattern.remove(0, basePath.length());
+std::vector<QString> listFiles(QString basePath, QString pattern) {
+    std::vector<QString> filePaths;
+    QDirIterator it(basePath, QStringList() << pattern, QDir::Files,
+                    QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        filePaths.push_back(it.next());
+    }
+    return filePaths;
+}
+
+QString extractPattern(QString fullPath) {
+    QString basePath = getBasePath(fullPath);
+    QString pattern = fullPath;
+    if (!basePath.isEmpty())
+        pattern.remove(0, basePath.length());
     if (pattern.startsWith('/'))
         pattern.remove(0, 1);
     if (pattern.isEmpty())
         pattern = "*";
+    return pattern;
+}
+
+std::vector<FileHash> createZip(QString gameId, QString path) { // NOLINT
+    QString basePath = getBasePath(path);
+    QString pattern = extractPattern(path);
 
     QString tempDir =
         QStandardPaths::writableLocation(QStandardPaths::TempLocation) +
@@ -93,11 +110,8 @@ std::vector<FileHash> createZip(QString gameId, QString path) { // NOLINT
         return hashes;
     }
 
-    QDirIterator it(basePath, QStringList() << pattern, QDir::Files,
-                    QDirIterator::Subdirectories);
-    while (it.hasNext()) {
-        QString filePath = it.next();
-
+    auto filePaths = listFiles(basePath, pattern);
+    for (const auto& filePath : filePaths) {
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly)) {
             qWarning() << "Cannot open file for reading:" << filePath;
