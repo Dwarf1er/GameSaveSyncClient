@@ -73,11 +73,16 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     trayIcon =
         new QSystemTrayIcon(QIcon::fromTheme("applications-system"), this);
     trayMenu = new QMenu(this);
-
     showAction = new QAction("Show", this);
-
     connect(showAction, &QAction::triggered, this, &MainWindow::showWindow);
     connect(quitAction, &QAction::triggered, qApp, &QApplication::quit);
+
+    connect(trayIcon, &QSystemTrayIcon::activated, this,
+            [this](QSystemTrayIcon::ActivationReason reason) -> void {
+                if (reason == QSystemTrayIcon::Trigger) {
+                    this->showWindow();
+                }
+            });
 
     trayMenu->addAction(showAction);
     trayMenu->addSeparator();
