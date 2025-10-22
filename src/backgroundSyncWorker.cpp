@@ -1,7 +1,9 @@
 #include "backgroundSyncWorker.h"
+
 #include "config.h"
 #include "utilFileSystem.h"
 #include "utilGameSyncServer.h"
+#include <algorithm>
 
 constexpr int timerInterval = 30 * 1000;
 constexpr qint64 savesMinimumInterval = static_cast<qint64>(5 * 60);
@@ -15,6 +17,10 @@ void BackgroundSyncWorker::start() {
 }
 
 bool shouldUploadLocalFile(int pathId) {
+    QString configPath = config::getPath(pathId);
+    if (!utilFileSystem::validatePath(configPath))
+        return false;
+
     QList<UtilGameSyncServer::SaveJson> savesJson =
         UtilGameSyncServer::getInstance().getSavesForPathId(pathId);
     if (savesJson.isEmpty())
@@ -35,6 +41,28 @@ bool shouldUploadLocalFile(int pathId) {
 
     if ((QDateTime::currentSecsSinceEpoch() - lastSave.unixTime) <
         savesMinimumInterval) {
+        return false;
+    }
+
+    std::vector<utilFileSystem::FileHash> dbHashes;
+    dbHashes.reserve(lastSave.savesHash.size());
+    std::ranges::transform(lastSave.savesHash, std::back_inserter(dbHashes),
+                           [](const UtilGameSyncServer::SaveHash& saveHash)
+                               -> utilFileSystem::FileHash {
+                               return utilFileSystem::FileHash{
+                                   .relativePath = saveHash.relativePath,
+                                   .hash = saveHash.hash,
+                               };
+                           });
+
+    QString basePath = utilFileSystem::getBasePath(configPath);
+    QString pattern = utilFileSystem::extractPattern(configPath);
+    std::vector<QString> listOfFile =
+        utilFileSystem::listFiles(basePath, pattern);
+    std::vector<utilFileSystem::FileHash> currentFileHash =
+        utilFileSystem::getHashFiles(listOfFile, basePath);
+
+    if (dbHashes == currentFileHash) {
         return false;
     }
 
@@ -63,9 +91,6 @@ void BackgroundSyncWorker::syncGameSaveToServer() {
     for (int gameId : config::returnAllIds()) {
         forEachGamePath(
             gameId, [&](int pathId, const QString& configPath) -> void {
-                if (!utilFileSystem::validatePath(configPath))
-                    return;
-
                 if (!shouldUploadLocalFile(pathId))
                     return;
 

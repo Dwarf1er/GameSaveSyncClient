@@ -26,9 +26,9 @@
 #include <QStandardPaths>
 
 namespace utilFileSystem {
-bool validatePath(QString path) { return !getBasePath(path).isEmpty(); }
+bool validatePath(const QString path) { return !getBasePath(path).isEmpty(); }
 
-QString getBasePath(QString path) {
+QString getBasePath(const QString path) {
     if (path.isEmpty()) {
         return {""};
     }
@@ -66,7 +66,32 @@ QString getBasePath(QString path) {
     return basePath;
 }
 
-std::vector<QString> listFiles(QString basePath, QString pattern) {
+std::vector<FileHash> getHashFiles(const std::vector<QString>& filePaths,
+                                   const QString& basePath) {
+    std::vector<FileHash> hashes;
+
+    for (const auto& filePath : filePaths) {
+        QFile file(filePath);
+        if (!file.open(QIODevice::ReadOnly)) {
+            qWarning() << "Cannot open file for hashing:" << filePath;
+            continue;
+        }
+
+        QByteArray data = file.readAll();
+        file.close();
+
+        QCryptographicHash fileHash(QCryptographicHash::Sha256);
+        fileHash.addData(data);
+        QByteArray hex = fileHash.result().toHex();
+
+        QString relative = QDir(basePath).relativeFilePath(filePath);
+        hashes.push_back(FileHash{.relativePath = relative, .hash = hex});
+    }
+
+    return hashes;
+}
+
+std::vector<QString> listFiles(const QString basePath, const QString pattern) {
     std::vector<QString> filePaths;
     QDirIterator it(basePath, QStringList() << pattern, QDir::Files,
                     QDirIterator::Subdirectories);
@@ -76,7 +101,7 @@ std::vector<QString> listFiles(QString basePath, QString pattern) {
     return filePaths;
 }
 
-QString extractPattern(QString fullPath) {
+QString extractPattern(const QString fullPath) {
     QString basePath = getBasePath(fullPath);
     QString pattern = fullPath;
     if (!basePath.isEmpty())
@@ -88,7 +113,8 @@ QString extractPattern(QString fullPath) {
     return pattern;
 }
 
-std::vector<FileHash> createZip(QString gameId, QString path) { // NOLINT
+std::vector<FileHash> createZip(const QString gameId, // NOLINT
+                                const QString path) {
     QString basePath = getBasePath(path);
     QString pattern = extractPattern(path);
 
@@ -111,6 +137,9 @@ std::vector<FileHash> createZip(QString gameId, QString path) { // NOLINT
     }
 
     auto filePaths = listFiles(basePath, pattern);
+
+    hashes = getHashFiles(filePaths, basePath);
+
     for (const auto& filePath : filePaths) {
         QFile file(filePath);
         if (!file.open(QIODevice::ReadOnly)) {
@@ -121,21 +150,15 @@ std::vector<FileHash> createZip(QString gameId, QString path) { // NOLINT
         QByteArray data = file.readAll();
         file.close();
 
-        QCryptographicHash fileHash(QCryptographicHash::Sha256);
-        fileHash.addData(data);
-        QByteArray hex = fileHash.result().toHex();
-
-        QString relative = QDir(basePath).relativeFilePath(filePath);
-        hashes.push_back(FileHash{.relativePath = relative, .hash = hex});
-
-        QByteArray entryNameUtf8 = relative.toUtf8();
+        QByteArray entryNameUtf8 =
+            QDir(basePath).relativeFilePath(filePath).toUtf8();
         QByteArray filePathUtf8 = filePath.toUtf8();
 
         if (!mz_zip_writer_add_file(&zip, entryNameUtf8.constData(),
                                     filePathUtf8.constData(), nullptr, 0,
                                     MZ_BEST_COMPRESSION)) {
             qWarning() << "Failed to add file to zip:" << filePath << "as"
-                       << relative;
+                       << entryNameUtf8.constData();
         }
     }
 
