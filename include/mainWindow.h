@@ -22,13 +22,15 @@ class MainWindow : public QMainWindow {
 
   private:
     DetailsViewWidget* detailsView;
+    QAction* aboutQtAction;
     QAction* addGameDialogAction;
     QAction* quitAction;
-    QAction* showAction;
     QAction* removeGameFromSyncAction;
+    QAction* showAction;
     QListWidget* syncList;
-    QMenu* syncMenu;
+    QMenu* aboutMenu;
     QMenu* fileMenu;
+    QMenu* syncMenu;
     QMenu* trayMenu;
     QMenuBar* mainMenuBar;
     QSplitter* mainSplitter;

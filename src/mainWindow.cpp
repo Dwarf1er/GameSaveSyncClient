@@ -11,6 +11,7 @@
 #include <QListWidget>
 #include <QMenu>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QSizePolicy>
 #include <QSplitter>
 #include <QSystemTrayIcon>
@@ -42,6 +43,14 @@ MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     connect(removeGameFromSyncAction, &QAction::triggered, this,
             &MainWindow::removeGameFromSync);
     syncMenu->addAction(removeGameFromSyncAction);
+
+    aboutMenu = mainMenuBar->addMenu("&About");
+    aboutQtAction = new QAction(QIcon::fromTheme(QIcon::ThemeIcon::HelpAbout),
+                                "about &Qt", this);
+    aboutQtAction->setStatusTip("Show about dialog from Qt");
+    connect(aboutQtAction, &QAction::triggered, this,
+            [this]() -> void { QMessageBox::aboutQt(this); });
+    aboutMenu->addAction(aboutQtAction);
 
     setMenuBar(mainMenuBar);
 
