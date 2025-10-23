@@ -1,4 +1,5 @@
 #include "utilGameSyncServer.h"
+#include "config.h"
 #include <QCoreApplication>
 #include <QDebug>
 #include <QDir>
@@ -16,9 +17,12 @@
 #include <QThread>
 #include <QTimer>
 
-QJsonDocument UtilGameSyncServer::fetchRemoteEndpoint(QString endpoint) {
+QJsonDocument UtilGameSyncServer::fetchRemoteEndpoint(QString endpoint,
+                                                      QUrl forcedURL) {
     QNetworkAccessManager manager;
-    QUrl baseUrl = remoteUrl.adjusted(QUrl::StripTrailingSlash);
+    QUrl baseUrl = config::getRemoteURL().adjusted(QUrl::StripTrailingSlash);
+    if (!forcedURL.isEmpty())
+        baseUrl = forcedURL.adjusted(QUrl::StripTrailingSlash);
     baseUrl.setPath(baseUrl.path() + endpoint);
     QNetworkRequest request(baseUrl);
     QNetworkReply* reply = manager.get(request);
@@ -190,7 +194,7 @@ std::optional<QString> UtilGameSyncServer::postGameSavesForPathId(
     int pathId, int gameId, // NOLINT
     std::vector<utilFileSystem::FileHash> hashOfContent) {
     QString endpoint = "/v1/paths/" + QString::number(pathId) + "/saves/upload";
-    QUrl url = remoteUrl.adjusted(QUrl::StripTrailingSlash);
+    QUrl url = config::getRemoteURL().adjusted(QUrl::StripTrailingSlash);
     url.setPath(url.path() + endpoint);
 
     QJsonArray hashArray;
@@ -250,4 +254,9 @@ std::optional<QString> UtilGameSyncServer::postGameSavesForPathId(
     reply->deleteLater();
 
     return uuid;
+}
+
+bool UtilGameSyncServer::testConnection(QUrl testURL) {
+    return testURL.isValid() &&
+           !fetchRemoteEndpoint("/v1/games", testURL).isEmpty();
 }

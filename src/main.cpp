@@ -1,7 +1,8 @@
 #include "backgroundSyncWorker.h"
+#include "config.h"
 #include "mainWindow.h"
+#include "setupWindow.h"
 #include "status.h"
-#include "utilGameSyncServer.h"
 #include <QApplication>
 #include <QThread>
 
@@ -10,10 +11,16 @@ int main(int argc, char* argv[]) {
     QCoreApplication::setOrganizationName("GameSaveSync");
     QCoreApplication::setApplicationName("GameSaveSyncClient");
 
-    UtilGameSyncServer::getInstance().setServerURL(
-        QUrl("http://localhost:3000"));
-
     app.setQuitOnLastWindowClosed(false);
+
+    if (!config::getRemoteURL().isValid()) {
+        auto* setupWindow = new SetupWindow();
+        auto result = static_cast<QDialog::DialogCode>(setupWindow->exec());
+        setupWindow->deleteLater();
+
+        if (result != QDialog::Accepted)
+            return 0;
+    }
 
     auto workerThread = new QThread;
     auto worker = new BackgroundSyncWorker;

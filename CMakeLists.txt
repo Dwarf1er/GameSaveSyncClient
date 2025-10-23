@@ -54,6 +54,7 @@ add_executable(${TARGET_NAME}
     include/pathEditableRowWidget.h
     include/pathItemDelegate.h
     include/pathListModel.h
+    include/setupWindow.h
     include/status.h
     include/utilFileSystem.h
     include/utilGameSyncServer.h
@@ -66,6 +67,7 @@ add_executable(${TARGET_NAME}
     src/pathEditableRowWidget.cpp
     src/pathItemDelegate.cpp
     src/pathListModel.cpp
+    src/setupWindow.cpp
     src/status.cpp
     src/utilFileSystem.cpp
     src/utilGameSyncServer.cpp

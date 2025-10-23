@@ -2,6 +2,7 @@
 #include "addGameDialog.h"
 #include "config.h"
 #include "detailsViewWidget.h"
+#include "setupWindow.h"
 #include "utilGameSyncServer.h"
 #include <QAction>
 #include <QApplication>
@@ -21,11 +22,17 @@
 MainWindow::MainWindow(QWidget* parent) : QMainWindow(parent) {
     mainMenuBar = new QMenuBar(this);
 
+    fileMenu = mainMenuBar->addMenu("&File");
     quitAction = new QAction("Quit", this);
     quitAction->setShortcut(QKeySequence::Quit);
-
-    fileMenu = mainMenuBar->addMenu("&File");
     fileMenu->addAction(quitAction);
+
+    showSetupWindowAction = new QAction("&Setup", this);
+    showSetupWindowAction->setStatusTip(
+        "Change the configuration of the remote URL");
+    connect(showSetupWindowAction, &QAction::triggered, this,
+            &MainWindow::showSetupWindowDialog);
+    fileMenu->addAction(showSetupWindowAction);
 
     syncMenu = mainMenuBar->addMenu("&Sync");
     addGameDialogAction = new QAction(
@@ -156,4 +163,10 @@ void MainWindow::onErrorOccurred(QString msg) {
 void MainWindow::closeEvent(QCloseEvent* event) {
     this->hide();
     event->ignore();
+}
+
+void MainWindow::showSetupWindowDialog() {
+    auto setupWindowDialog = new SetupWindow(this);
+    setupWindowDialog->setAttribute(Qt::WA_DeleteOnClose);
+    setupWindowDialog->show();
 }

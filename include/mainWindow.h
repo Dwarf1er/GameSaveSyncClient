@@ -27,6 +27,7 @@ class MainWindow : public QMainWindow {
     QAction* quitAction;
     QAction* removeGameFromSyncAction;
     QAction* showAction;
+    QAction* showSetupWindowAction;
     QListWidget* syncList;
     QMenu* aboutMenu;
     QMenu* fileMenu;
@@ -44,6 +45,7 @@ class MainWindow : public QMainWindow {
   private slots:
     void addGameDialogOpen();
     void removeGameFromSync();
+    void showSetupWindowDialog();
 
   protected:
     void closeEvent(QCloseEvent* event) override; // hide on close

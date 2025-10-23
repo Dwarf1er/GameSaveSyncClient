@@ -71,4 +71,14 @@ void removeUUIDForPath(int pathID) {
     settings.remove(getPathUUIDKey(pathID));
 }
 
+void updateRemoteURL(QUrl remoteURL) {
+    QSettings settings = config::getConfig();
+    settings.setValue("remote/URL", remoteURL);
+}
+
+QUrl getRemoteURL() {
+    QSettings settings = config::getConfig();
+    return settings.value("remote/URL", QString{}).toUrl();
+}
+
 } // namespace config

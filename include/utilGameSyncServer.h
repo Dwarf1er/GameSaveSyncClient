@@ -43,20 +43,18 @@ class UtilGameSyncServer {
     static constexpr QStringView linuxOS = u"linux";
     static constexpr QStringView undefined = u"undefined";
 
-    // Normally one per OS, but on Linux we take the Windows one too
 #if defined(Q_OS_WIN)
-    QList<QString> listOfAcceptableOs = {QString(windowsOS)};
+    QList<QString> listOfAcceptableOs = {QString(windowsOS),
+                                         QString(undefined)};
 #elif defined(Q_OS_LINUX)
-    QList<QString> listOfAcceptableOs = {QString(windowsOS), QString(linuxOS)};
+    QList<QString> listOfAcceptableOs = {QString(windowsOS), QString(linuxOS),
+                                         QString(undefined)};
 #endif
 
     static UtilGameSyncServer& getInstance() {
         static UtilGameSyncServer instance;
         return instance;
     }
-
-    void setServerURL(QUrl url) { this->remoteUrl = url; }
-    QUrl getServerURL() { return this->remoteUrl; }
 
     QList<GameMetadata> getGameMetadataList(bool forceFetch = false);
     std::optional<UtilGameSyncServer::GameMetadata> getGameMetadata(int id);
@@ -68,6 +66,7 @@ class UtilGameSyncServer {
     std::optional<QString>
     postGameSavesForPathId(int pathId, int gameId,
                            std::vector<utilFileSystem::FileHash> hashOfContent);
+    bool testConnection(QUrl testURL);
 
     UtilGameSyncServer(UtilGameSyncServer const&) = delete;
     UtilGameSyncServer& operator=(UtilGameSyncServer const&) = delete;
@@ -77,10 +76,9 @@ class UtilGameSyncServer {
     ~UtilGameSyncServer() = default;
 
   private:
-    QUrl remoteUrl;
     QList<GameMetadata> gameMetadataList;
     QMap<int, QList<GamePath>> gamePathMap;
     QMap<int, QList<ExecutableJson>> gameExecutableMap;
 
-    QJsonDocument fetchRemoteEndpoint(QString endpoint);
+    QJsonDocument fetchRemoteEndpoint(QString endpoint, QUrl forcedURL = {});
 };
