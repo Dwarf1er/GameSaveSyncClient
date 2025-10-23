@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=GameSaveSyncClient
+Comment=Client for GameSaveSyncServer
+Path=/usr/bin
+Exec=GameSaveSyncClient
+Terminal=false
+Categories=Utility
+Icon=GameSaveSyncClient
