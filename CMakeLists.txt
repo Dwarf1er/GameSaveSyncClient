@@ -123,17 +123,8 @@ else()
     target_compile_options(miniz_static PRIVATE -w)
 endif()
 
-FetchContent_Declare(
-  SingleApplication
-  GIT_REPOSITORY https://github.com/itay-grudev/SingleApplication
-  GIT_TAG        master
-)
-FetchContent_MakeAvailable(SingleApplication)
-
 target_link_libraries(${TARGET_NAME} PRIVATE miniz_static)
 target_link_libraries(${TARGET_NAME}
     PRIVATE Qt${QT_MAJOR_VERSION}::Widgets)
 target_link_libraries(${TARGET_NAME}
     PRIVATE Qt${QT_MAJOR_VERSION}::Network)
-TARGET_LINK_LIBRARIES(${TARGET_NAME}
-    PRIVATE SingleApplication::SingleApplication)

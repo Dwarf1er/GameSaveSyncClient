@@ -5,17 +5,11 @@
 #include "status.h"
 #include <QApplication>
 #include <QThread>
-#include <singleapplication.h>
 
 int main(int argc, char* argv[]) {
     QApplication app(argc, argv);
     QCoreApplication::setOrganizationName("GameSaveSync");
     QCoreApplication::setApplicationName("GameSaveSyncClient");
-
-    SingleApplication single(argc, argv, true);
-
-    if (!single.isPrimary())
-        return 0;
 
     app.setQuitOnLastWindowClosed(false);
 
