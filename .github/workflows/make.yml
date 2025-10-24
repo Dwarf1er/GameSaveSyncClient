@@ -73,9 +73,12 @@ jobs:
         id: build-appimage
         run: |
           mkdir -p AppDir/usr/bin
+          mkdir -p AppDir/lib
+          mkdir -p AppDir/share/applications
+          mkdir -p AppDir/share/icons/hicolor/256x256/
           cp download/bin/Release/GameSaveSyncClient AppDir/usr/bin/
-          cp res/GameSaveSyncClient.desktop AppDir/
-          cp res/icon/GameSaveSyncClient.png AppDir/
+          cp res/GameSaveSyncClient.desktop AppDir/share/applications
+          cp res/icon/GameSaveSyncClient.png AppDir/share/icons/hicolor/256x256/
           wget -O linuxdeployqt-x86_64.AppImage \
           https://github.com/probonopd/linuxdeployqt/releases/download/continuous/linuxdeployqt-continuous-x86_64.AppImage
           chmod +x linuxdeployqt-x86_64.AppImage
